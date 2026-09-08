@@ -13,14 +13,24 @@ Accrescent, distributed via Obtainium for now.
   lock-screen widget columns.
 - **History.** Persistent, on-device, like the stock calculator.
 
-## Status — Phases 0–2 done
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/basic.png" width="31%" alt="Calculator with history and a live percent preview">
+  &nbsp;
+  <img src="docs/screenshots/scientific.png" width="31%" alt="Scientific keypad in degrees mode, sin(45)">
+  &nbsp;
+  <img src="docs/screenshots/widget.png" width="31%" alt="Widget rendered at the 1/3, 2/3 and 3/3 lock-screen column widths">
+</p>
+
+## Status — Phases 0–3 done
 
 | Phase | Scope | State |
 |------:|-------|-------|
 | 0 | Toolchain, JNI bridge, CI, reproducible-ish build | ✅ |
 | 1 | Decimal calculator: `+ − × ÷ ^ %`, parens, `±`, history | ✅ |
 | 2 | Interactive home/lock-screen widget, responsive sizes | ✅ |
-| 3 | Scientific functions (trig, logs, constants, DEG/RAD) | later |
+| 3 | Scientific: trig + inverses, hyperbolics, logs, roots, `nCr`/`gcd`, DEG/RAD/GRAD | ✅ |
 | 4 | TI-84 graphing (subset) | later |
 | 5 | Programmer calculator (bases, bitwise, word sizes) | later |
 

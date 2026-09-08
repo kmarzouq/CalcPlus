@@ -28,13 +28,13 @@ class WidgetPreviewActivity : Activity() {
 
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(24), dp(16), dp(24))
+            setPadding(dp(16), dp(8), dp(16), dp(8))
         }
 
         for ((label, w, h) in listOf(
-            Triple("1 / 3  (narrow)", 120, 260),
-            Triple("2 / 3  (medium)", 200, 300),
-            Triple("3 / 3  (wide)", 300, 340),
+            Triple("1 / 3  (narrow)", 124, 236),
+            Triple("2 / 3  (medium)", 190, 250),
+            Triple("3 / 3  (wide)", 280, 262),
         )) {
             column.addView(TextView(this).apply {
                 text = label
@@ -44,8 +44,7 @@ class WidgetPreviewActivity : Activity() {
             val holder = LinearLayout(this)
             val v: View = layoutInflater.inflate(R.layout.widget_calculator, holder, false)
             // The real widget fills these via RemoteViews; do it here for the preview.
-            v.findViewById<TextView>(R.id.wFormula)?.text = "12×3+4"
-            v.findViewById<TextView>(R.id.wResult)?.text = "= 40"
+            v.findViewById<TextView>(R.id.wFormula)?.text = "12×3+4 = 40"
             holder.addView(v, ViewGroup.LayoutParams(dp(w), dp(h)))
             column.addView(holder)
         }
