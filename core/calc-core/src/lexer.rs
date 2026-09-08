@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 //! Hand-written lexer. Produces a flat `Vec<Token>` (expressions are short,
 //! so there is no value in a streaming lexer here).
 

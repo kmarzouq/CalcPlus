@@ -51,16 +51,16 @@ jobs:
         run: |
           mkdir -p dist
           v="${GITHUB_REF_NAME#v}"
-          cp android/app/build/outputs/apk/release/*.apk "dist/calculator-${v}.apk"
-          cp android/app/build/outputs/bundle/release/*.aab "dist/calculator-${v}.aab"
+          cp android/app/build/outputs/apk/release/*.apk "dist/calcplus-${v}.apk"
+          cp android/app/build/outputs/bundle/release/*.aab "dist/calcplus-${v}.aab"
           (cd dist && sha256sum * > SHA256SUMS.txt)
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/calculator-*.apk
-            dist/calculator-*.aab
+            dist/calcplus-*.apk
+            dist/calcplus-*.aab
             dist/SHA256SUMS.txt
           generate_release_notes: true
           fail_on_unmatched_files: true

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 //! Pratt parser (precedence climbing).
 //!
 //! Binding powers (left, right):

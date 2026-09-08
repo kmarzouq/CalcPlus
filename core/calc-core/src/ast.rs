@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 //! Expression tree produced by the parser and consumed by the evaluator.
 
 use alloc::boxed::Box;

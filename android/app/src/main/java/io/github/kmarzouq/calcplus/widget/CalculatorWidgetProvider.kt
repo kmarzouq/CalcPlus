@@ -1,4 +1,5 @@
-package io.github.marzouq.calc.widget
+// SPDX-License-Identifier: GPL-2.0-only
+package io.github.kmarzouq.calcplus.widget
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -10,12 +11,12 @@ import android.os.Bundle
 import android.util.SizeF
 import android.util.TypedValue
 import android.widget.RemoteViews
-import io.github.marzouq.calc.CalcDoc
-import io.github.marzouq.calc.CalcEngine
-import io.github.marzouq.calc.EvalResult
-import io.github.marzouq.calc.Key
-import io.github.marzouq.calc.MainActivity
-import io.github.marzouq.calc.R
+import io.github.kmarzouq.calcplus.CalcDoc
+import io.github.kmarzouq.calcplus.CalcEngine
+import io.github.kmarzouq.calcplus.EvalResult
+import io.github.kmarzouq.calcplus.Key
+import io.github.kmarzouq.calcplus.MainActivity
+import io.github.kmarzouq.calcplus.R
 
 /**
  * Interactive calculator widget.
@@ -132,7 +133,7 @@ class CalculatorWidgetProvider : AppWidgetProvider() {
     }
 
     private companion object {
-        const val ACTION_KEY = "io.github.marzouq.calc.widget.KEY"
+        const val ACTION_KEY = "io.github.kmarzouq.calcplus.widget.KEY"
         const val EXTRA_ID = "widget_id"
         const val EXTRA_KEY = "key"
         const val PI_FLAGS = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

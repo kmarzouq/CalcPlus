@@ -1,7 +1,8 @@
-package io.github.marzouq.calc.widget
+// SPDX-License-Identifier: GPL-2.0-only
+package io.github.kmarzouq.calcplus.widget
 
 import android.content.Context
-import io.github.marzouq.calc.CalcDoc
+import io.github.kmarzouq.calcplus.CalcDoc
 
 /**
  * Per-widget expression state. Backed by a private SharedPreferences file

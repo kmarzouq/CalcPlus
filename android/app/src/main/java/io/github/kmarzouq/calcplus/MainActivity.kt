@@ -1,4 +1,5 @@
-package io.github.marzouq.calc
+// SPDX-License-Identifier: GPL-2.0-only
+package io.github.kmarzouq.calcplus
 
 import android.app.Activity
 import android.content.ClipData
@@ -7,8 +8,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import io.github.marzouq.calc.databinding.ActivityMainBinding
-import io.github.marzouq.calc.databinding.HistoryRowBinding
+import io.github.kmarzouq.calcplus.databinding.ActivityMainBinding
+import io.github.kmarzouq.calcplus.databinding.HistoryRowBinding
 
 class MainActivity : Activity() {
 

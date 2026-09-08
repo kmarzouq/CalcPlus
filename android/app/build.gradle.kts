@@ -15,12 +15,12 @@ val keystoreProps = Properties().apply {
 val ndkPinned = "27.2.12479018"
 
 android {
-    namespace = "io.github.marzouq.calc"
+    namespace = "io.github.kmarzouq.calcplus"
     compileSdk = 36
     ndkVersion = ndkPinned
 
     defaultConfig {
-        applicationId = "io.github.marzouq.calc"
+        applicationId = "io.github.kmarzouq.calcplus"
         minSdk = 31
         targetSdk = 36
         versionCode = 1

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 //! Error type for the engine. Every failure mode is explicit; the engine
 //! never panics on user input.
 

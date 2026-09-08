@@ -1,4 +1,5 @@
-package io.github.marzouq.calc
+// SPDX-License-Identifier: GPL-2.0-only
+package io.github.kmarzouq.calcplus
 
 /**
  * Every button the calculator can emit. Shared by the activity keypad and the

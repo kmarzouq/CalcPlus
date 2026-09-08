@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 //! Expression engine for CalculatorApp.
 //!
 //! Pipeline: `&str` -> [`lexer`] -> [`parser`] (Pratt) -> [`ast::Expr`] ->

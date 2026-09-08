@@ -1,4 +1,5 @@
-package io.github.marzouq.calc
+// SPDX-License-Identifier: GPL-2.0-only
+package io.github.kmarzouq.calcplus
 
 /**
  * The editable calculator expression plus a flag for "the last thing that

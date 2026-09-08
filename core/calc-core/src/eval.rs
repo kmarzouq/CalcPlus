@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 //! Tree-walking evaluator over [`Decimal`].
 //!
 //! Exact arithmetic (`+ - * /`, integer powers, `!`, `nCr`, `gcd`, …) stays in

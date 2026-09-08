@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 //! Result formatting: rounding, trailing-zero trim, digit grouping and, for
 //! very large / very small magnitudes, scientific notation.
 //!

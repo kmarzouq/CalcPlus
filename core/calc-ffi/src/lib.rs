@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0-only
 //! JNI surface for `calc-core`, built as `libcalc.so`.
 //!
-//! Kotlin side: `io.github.marzouq.calc.NativeBridge`.
+//! Kotlin side: `io.github.kmarzouq.calcplus.NativeBridge`.
 //!
 //! Contract:
 //! * `nativeEval` returns the formatted result string on success.
@@ -23,7 +24,7 @@ use jni::JNIEnv;
 /// code units so the Kotlin layer can forward the device locale's choices.
 /// `angleMode`: 0 = radians, 1 = degrees, 2 = gradians.
 #[no_mangle]
-pub extern "system" fn Java_io_github_marzouq_calc_NativeBridge_nativeEval<'l>(
+pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeEval<'l>(
     mut env: JNIEnv<'l>,
     _class: JClass<'l>,
     expr: JString<'l>,
@@ -76,7 +77,7 @@ pub extern "system" fn Java_io_github_marzouq_calc_NativeBridge_nativeEval<'l>(
 
 /// `NativeBridge.nativeVersion()` — cheap smoke test that the `.so` loaded.
 #[no_mangle]
-pub extern "system" fn Java_io_github_marzouq_calc_NativeBridge_nativeVersion<'l>(
+pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeVersion<'l>(
     env: JNIEnv<'l>,
     _class: JClass<'l>,
 ) -> jstring {

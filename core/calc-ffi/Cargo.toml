@@ -2,7 +2,7 @@
 name = "calc-ffi"
 version = "0.1.0"
 edition = "2021"
-license = "GPL-3.0-or-later"
+license = "GPL-2.0-only"
 description = "JNI bridge: exposes calc-core to the Android app as libcalc.so."
 publish = false
 

@@ -2,7 +2,7 @@
 name = "calc-core"
 version = "0.1.0"
 edition = "2021"
-license = "GPL-3.0-or-later"
+license = "GPL-2.0-only"
 description = "Expression engine for CalculatorApp: lexer, Pratt parser, decimal evaluator."
 publish = false
 

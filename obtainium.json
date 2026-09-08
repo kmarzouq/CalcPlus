@@ -1,9 +1,9 @@
 {
-  "_comment": "Obtainium app import config. Replace USER/REPO with your GitHub repo, then share this file or the equivalent obtainium:// link. Obtainium -> Add App -> Import from JSON.",
-  "id": "io.github.marzouq.calc",
-  "url": "https://github.com/USER/REPO",
-  "author": "USER",
-  "name": "Calculator",
+  "_comment": "Obtainium app import config. Replace REPO with the repository name, then share this file or the equivalent obtainium:// link. Obtainium -> Add App -> Import from JSON.",
+  "id": "io.github.kmarzouq.calcplus",
+  "url": "https://github.com/kmarzouq/REPO",
+  "author": "kmarzouq",
+  "name": "CalcPlus",
   "preferredApkIndex": 0,
-  "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"dontSortReleasesList\":false,\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"apkFilterRegEx\":\"calculator-.*\\\\.apk$\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"Calculator\",\"appAuthor\":\"USER\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Tiny permission-free calculator with an interactive lock-screen widget. Rust core, Kotlin shell.\"}"
+  "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":false,\"dontSortReleasesList\":false,\"useLatestAssetDateAsReleaseDate\":false,\"releaseTitleAsVersion\":false,\"apkFilterRegEx\":\"calcplus-.*\\\\.apk$\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"CalcPlus\",\"appAuthor\":\"kmarzouq\",\"shizukuPretendToBeGooglePlay\":false,\"allowInsecure\":false,\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Tiny permission-free calculator with an interactive lock-screen widget. Rust core, Kotlin shell.\"}"
 }

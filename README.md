@@ -1,11 +1,11 @@
-# Calculator
+# CalcPlus
 
 A tiny, permission-free calculator for Android — built for GrapheneOS and
 Accrescent, distributed via Obtainium for now.
 
 - **No permissions.** The manifest declares none. Not `INTERNET`, nothing.
-- **Small.** One Rust `.so` (~350 KB, arm64 only), no Compose, no AppCompat,
-  no Material library. Release APK target: **< 2 MB**.
+- **Small.** One Rust `.so` (~385 KB, arm64 only), no Compose, no AppCompat,
+  no Material library. Release APK ≈ **460 KB**.
 - **Rust core, Kotlin shell.** All arithmetic lives in `calc-core` (Rust,
   `no_std`); Kotlin does UI and the widget.
 - **Interactive lock-screen widget.** Every key is a broadcast, so the keypad
@@ -93,12 +93,13 @@ register as a developer, wire up reproducible builds, submit.
 
 ## App ID
 
-`io.github.marzouq.calc` — **change this** to a namespace you control before
-publishing (it must match your GitHub username for the `io.github.*` form, or
-use your own domain).
+`io.github.kmarzouq.calcplus` — the permanent package identity (reverse-DNS of
+the GitHub namespace, Accrescent-acceptable). The display name is `CalcPlus`
+(`app_name` string). Debug builds get a `.debug` suffix so both can be
+installed side by side.
 
 ## License
 
-Build metadata assumes `GPL-3.0-or-later`. Replace with your choice
-(MIT / Apache-2.0) if you prefer — update `core/*/Cargo.toml` and add a
-`LICENSE` file.
+[GNU General Public License v2.0 only](LICENSE). SPDX: `GPL-2.0-only`.
+All third-party dependencies are permissively licensed (MIT / Apache-2.0), so
+they impose no additional conditions.
