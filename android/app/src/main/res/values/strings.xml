@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calculator</string>
+
+    <string name="key_clear">AC</string>
+    <string name="key_delete">⌫</string>
+    <string name="key_percent">%</string>
+    <string name="key_divide">÷</string>
+    <string name="key_multiply">×</string>
+    <string name="key_subtract">−</string>
+    <string name="key_add">+</string>
+    <string name="key_equals">=</string>
+    <string name="key_negate">±</string>
+    <string name="key_dot">.</string>
+
+    <string name="cd_delete">Delete last entry</string>
+    <string name="cd_clear">Clear</string>
+    <string name="cd_history">Calculation history</string>
+    <string name="cd_open_app">Open Calculator</string>
+
+    <string name="history_empty">No history yet</string>
+    <string name="history_cleared">History cleared</string>
+    <string name="copied">Copied</string>
+    <string name="clear_history">Clear history</string>
+
+    <string name="widget_description">A small calculator for your home or lock screen.</string>
+</resources>

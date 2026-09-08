@@ -1,0 +1,12 @@
+[workspace]
+resolver = "2"
+members = ["calc-core", "calc-ffi"]
+
+# Size-first release profile. `calc-core` stays panic-free; `calc-ffi`
+# still wraps every entry point in catch_unwind, so we keep unwinding
+# (no `panic = "abort"`) to fail soft instead of killing the host app.
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true

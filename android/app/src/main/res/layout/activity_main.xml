@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/window_bg"
+    android:fitsSystemWindows="true"
+    android:paddingHorizontal="@dimen/screen_padding"
+    android:paddingBottom="@dimen/screen_padding">
+
+    <ScrollView
+        android:id="@+id/historyScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/historyContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="bottom"
+            android:minHeight="120dp"
+            android:paddingTop="24dp" />
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/historyEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingVertical="8dp"
+        android:text="@string/history_empty"
+        android:textColor="@color/result_text"
+        android:textSize="@dimen/history_text"
+        android:visibility="gone" />
+
+    <HorizontalScrollView
+        android:id="@+id/formulaScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none"
+        android:fadingEdgeLength="24dp"
+        android:requiresFadingEdge="horizontal">
+
+        <TextView
+            android:id="@+id/formula"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="1dp"
+            android:gravity="end|center_vertical"
+            android:maxLines="1"
+            android:textColor="@color/display_text"
+            android:textSize="@dimen/display_formula_text"
+            android:textIsSelectable="true"
+            android:fontFamily="sans-serif-light" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="end|center_vertical"
+        android:maxLines="1"
+        android:minHeight="28dp"
+        android:textColor="@color/result_text"
+        android:textSize="@dimen/display_result_text" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="8dp"
+        android:background="@color/divider" />
+
+    <GridLayout
+        android:id="@+id/keypad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="4"
+        android:rowCount="5">
+
+        <Button android:id="@+id/keyClear" style="@style/CalcKey.Clear"
+            android:text="@string/key_clear"
+            android:contentDescription="@string/cd_clear" />
+        <Button android:id="@+id/keyDelete" style="@style/CalcKey"
+            android:text="@string/key_delete"
+            android:contentDescription="@string/cd_delete" />
+        <Button android:id="@+id/keyPct" style="@style/CalcKey.Op"
+            android:text="@string/key_percent" />
+        <Button android:id="@+id/keyDiv" style="@style/CalcKey.Op"
+            android:text="@string/key_divide" />
+
+        <Button android:id="@+id/key7" style="@style/CalcKey" android:text="7" />
+        <Button android:id="@+id/key8" style="@style/CalcKey" android:text="8" />
+        <Button android:id="@+id/key9" style="@style/CalcKey" android:text="9" />
+        <Button android:id="@+id/keyMul" style="@style/CalcKey.Op"
+            android:text="@string/key_multiply" />
+
+        <Button android:id="@+id/key4" style="@style/CalcKey" android:text="4" />
+        <Button android:id="@+id/key5" style="@style/CalcKey" android:text="5" />
+        <Button android:id="@+id/key6" style="@style/CalcKey" android:text="6" />
+        <Button android:id="@+id/keySub" style="@style/CalcKey.Op"
+            android:text="@string/key_subtract" />
+
+        <Button android:id="@+id/key1" style="@style/CalcKey" android:text="1" />
+        <Button android:id="@+id/key2" style="@style/CalcKey" android:text="2" />
+        <Button android:id="@+id/key3" style="@style/CalcKey" android:text="3" />
+        <Button android:id="@+id/keyAdd" style="@style/CalcKey.Op"
+            android:text="@string/key_add" />
+
+        <Button android:id="@+id/keyNeg" style="@style/CalcKey"
+            android:text="@string/key_negate" />
+        <Button android:id="@+id/key0" style="@style/CalcKey" android:text="0" />
+        <Button android:id="@+id/keyDot" style="@style/CalcKey"
+            android:text="@string/key_dot" />
+        <Button android:id="@+id/keyEquals" style="@style/CalcKey.Equals"
+            android:text="@string/key_equals" />
+    </GridLayout>
+
+</LinearLayout>

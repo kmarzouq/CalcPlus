@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Only calculation history and widget state are eligible for backup. -->
+<full-backup-content>
+    <include domain="file" path="history.tsv" />
+    <include domain="sharedpref" path="widget_state.xml" />
+</full-backup-content>

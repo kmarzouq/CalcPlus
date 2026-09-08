@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CalcKey">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_rowWeight">1</item>
+        <item name="android:layout_margin">@dimen/key_margin</item>
+        <item name="android:background">@drawable/key_background</item>
+        <item name="android:textColor">@color/key_text</item>
+        <item name="android:textSize">@dimen/key_text_size</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <style name="CalcKey.Op">
+        <item name="android:background">@drawable/key_background_accent</item>
+        <item name="android:textColor">@color/key_text_op</item>
+    </style>
+
+    <style name="CalcKey.Clear">
+        <item name="android:textColor">@color/key_text_clear</item>
+    </style>
+
+    <style name="CalcKey.Equals">
+        <item name="android:background">@drawable/key_background_equals</item>
+        <item name="android:textColor">@color/key_text_equals</item>
+    </style>
+
+    <!-- Widget keypad -->
+    <style name="WidgetRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="WidgetKey">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">2dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:background">@drawable/widget_key</item>
+        <item name="android:textColor">@color/widget_key_text</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <style name="WidgetKey.Op">
+        <item name="android:background">@drawable/widget_key_op</item>
+        <item name="android:textColor">@color/widget_key_op_text</item>
+    </style>
+
+    <style name="WidgetKey.Equals">
+        <item name="android:background">@drawable/widget_key_eq</item>
+        <item name="android:textColor">@color/widget_key_eq_text</item>
+    </style>
+</resources>

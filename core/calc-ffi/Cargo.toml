@@ -1,0 +1,17 @@
+[package]
+name = "calc-ffi"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-or-later"
+description = "JNI bridge: exposes calc-core to the Android app as libcalc.so."
+publish = false
+
+[lib]
+name = "calc"
+crate-type = ["cdylib"]
+
+[dependencies]
+calc-core = { path = "../calc-core" }
+# `invocation` (start a JVM from Rust) is deliberately off — we only ever run
+# as a library the JVM loads, so there is nothing to link against.
+jni = { version = "0.21", default-features = false }

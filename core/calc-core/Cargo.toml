@@ -1,0 +1,24 @@
+[package]
+name = "calc-core"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-or-later"
+description = "Expression engine for CalculatorApp: lexer, Pratt parser, decimal evaluator."
+publish = false
+
+[lib]
+# `no_std` in the shipped build; the test binary links libstd.
+crate-type = ["rlib"]
+
+[dependencies]
+rust_decimal = { version = "1.36", default-features = false, features = ["maths"] }
+
+[dev-dependencies]
+rust_decimal_macros = "1.36"
+proptest = "1"
+
+[lints.clippy]
+# The engine must never panic in a shipped build.
+unwrap_used = "warn"
+expect_used = "warn"
+panic = "warn"

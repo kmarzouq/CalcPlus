@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="window_bg">#FFFFFF</color>
+    <color name="display_text">#1F1F1F</color>
+    <color name="result_text">#5F6368</color>
+    <color name="key_bg">#F5F5F5</color>
+    <color name="key_bg_accent">#E8F0FE</color>
+    <color name="key_text">#1F1F1F</color>
+    <color name="key_text_op">#0B57D0</color>
+    <color name="key_text_clear">#B3261E</color>
+    <color name="key_text_equals">#FFFFFF</color>
+    <color name="key_bg_equals">#0B57D0</color>
+    <color name="divider">#E3E3E3</color>
+    <color name="ic_launcher_bg">#0B57D0</color>
+
+    <color name="widget_bg">#FBFBFB</color>
+    <color name="widget_key_bg">#EEEEEE</color>
+    <color name="widget_key_op_bg">#E3ECFD</color>
+    <color name="widget_key_eq_bg">#0B57D0</color>
+    <color name="widget_display_text">#1F1F1F</color>
+    <color name="widget_result_text">#5F6368</color>
+    <color name="widget_key_text">#1F1F1F</color>
+    <color name="widget_key_op_text">#0B57D0</color>
+    <color name="widget_key_eq_text">#FFFFFF</color>
+    <color name="widget_key_clear_text">#B3261E</color>
+</resources>

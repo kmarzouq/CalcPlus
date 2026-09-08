@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="file" path="history.tsv" />
+        <include domain="sharedpref" path="widget_state.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="file" path="history.tsv" />
+        <include domain="sharedpref" path="widget_state.xml" />
+    </device-transfer>
+</data-extraction-rules>
