@@ -12,15 +12,16 @@
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::ptr;
 
-use calc_core::{evaluate_to_string, FormatOptions};
+use calc_core::{evaluate_to_string, AngleMode, FormatOptions};
 use jni::objects::{JClass, JString};
 use jni::sys::{jchar, jint, jstring};
 use jni::JNIEnv;
 
-/// `NativeBridge.nativeEval(expr, groupSep, decimalSep, maxDecimals)`.
+/// `NativeBridge.nativeEval(expr, groupSep, decimalSep, maxDecimals, angleMode)`.
 ///
 /// `groupSep == 0` disables digit grouping. Separators are passed as UTF-16
 /// code units so the Kotlin layer can forward the device locale's choices.
+/// `angleMode`: 0 = radians, 1 = degrees, 2 = gradians.
 #[no_mangle]
 pub extern "system" fn Java_io_github_marzouq_calc_NativeBridge_nativeEval<'l>(
     mut env: JNIEnv<'l>,
@@ -29,6 +30,7 @@ pub extern "system" fn Java_io_github_marzouq_calc_NativeBridge_nativeEval<'l>(
     group_sep: jchar,
     decimal_sep: jchar,
     max_decimals: jint,
+    angle_mode: jint,
 ) -> jstring {
     let outcome = catch_unwind(AssertUnwindSafe(
         || -> Result<Option<String>, jni::errors::Error> {
@@ -38,8 +40,14 @@ pub extern "system" fn Java_io_github_marzouq_calc_NativeBridge_nativeEval<'l>(
                 group_sep: char::from_u32(u32::from(group_sep)).unwrap_or(','),
                 decimal_sep: char::from_u32(u32::from(decimal_sep)).unwrap_or('.'),
                 max_decimals: max_decimals.clamp(0, 28) as u32,
+                ..FormatOptions::default()
             };
-            match evaluate_to_string(&input, &opts) {
+            let angle = match angle_mode {
+                1 => AngleMode::Degrees,
+                2 => AngleMode::Gradians,
+                _ => AngleMode::Radians,
+            };
+            match evaluate_to_string(&input, &opts, angle) {
                 Ok(s) => Ok(Some(s)),
                 Err(e) => {
                     env.throw_new("java/lang/ArithmeticException", e.to_string())?;

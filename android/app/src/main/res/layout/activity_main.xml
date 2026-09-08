@@ -37,6 +37,42 @@
         android:textSize="@dimen/history_text"
         android:visibility="gone" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <Button
+            android:id="@+id/angleToggle"
+            style="@style/CalcKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0"
+            android:layout_rowWeight="0"
+            android:minWidth="64dp"
+            android:paddingHorizontal="12dp"
+            android:textSize="13sp"
+            android:text="RAD" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/sciToggle"
+            style="@style/CalcKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="0"
+            android:layout_rowWeight="0"
+            android:minWidth="64dp"
+            android:paddingHorizontal="12dp"
+            android:textSize="13sp"
+            android:text="f(x)" />
+    </LinearLayout>
+
     <HorizontalScrollView
         android:id="@+id/formulaScroll"
         android:layout_width="match_parent"
@@ -75,6 +111,36 @@
         android:layout_height="1dp"
         android:layout_marginVertical="8dp"
         android:background="@color/divider" />
+
+    <GridLayout
+        android:id="@+id/sciPad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="4"
+        android:rowCount="4"
+        android:layout_marginBottom="4dp"
+        android:visibility="gone">
+
+        <Button android:id="@+id/keySin" style="@style/CalcKey.Sci" android:text="sin" />
+        <Button android:id="@+id/keyCos" style="@style/CalcKey.Sci" android:text="cos" />
+        <Button android:id="@+id/keyTan" style="@style/CalcKey.Sci" android:text="tan" />
+        <Button android:id="@+id/keyPow" style="@style/CalcKey.Sci" android:text="^" />
+
+        <Button android:id="@+id/keyAsin" style="@style/CalcKey.Sci" android:text="sin⁻¹" />
+        <Button android:id="@+id/keyAcos" style="@style/CalcKey.Sci" android:text="cos⁻¹" />
+        <Button android:id="@+id/keyAtan" style="@style/CalcKey.Sci" android:text="tan⁻¹" />
+        <Button android:id="@+id/keySqrt" style="@style/CalcKey.Sci" android:text="√" />
+
+        <Button android:id="@+id/keyLn" style="@style/CalcKey.Sci" android:text="ln" />
+        <Button android:id="@+id/keyLog" style="@style/CalcKey.Sci" android:text="log" />
+        <Button android:id="@+id/keyRecip" style="@style/CalcKey.Sci" android:text="x⁻¹" />
+        <Button android:id="@+id/keyFact" style="@style/CalcKey.Sci" android:text="x!" />
+
+        <Button android:id="@+id/keyPi" style="@style/CalcKey.Sci" android:text="π" />
+        <Button android:id="@+id/keyEuler" style="@style/CalcKey.Sci" android:text="e" />
+        <Button android:id="@+id/keyLparen" style="@style/CalcKey.Sci" android:text="(" />
+        <Button android:id="@+id/keyRparen" style="@style/CalcKey.Sci" android:text=")" />
+    </GridLayout>
 
     <GridLayout
         android:id="@+id/keypad"

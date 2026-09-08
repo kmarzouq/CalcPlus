@@ -12,12 +12,26 @@ sealed interface EvalResult {
     data class Error(val message: String) : EvalResult
 }
 
+/** Angle unit for trig functions. [code] is the wire value for the native call. */
+enum class AngleMode(val code: Int, val label: String) {
+    RAD(0, "RAD"),
+    DEG(1, "DEG"),
+    GRAD(2, "GRAD");
+
+    fun next(): AngleMode = entries[(ordinal + 1) % entries.size]
+
+    companion object {
+        fun fromName(name: String?): AngleMode =
+            entries.firstOrNull { it.name == name } ?: RAD
+    }
+}
+
 /**
  * The one place the app talks to the Rust engine.
  *
  * Converts the pretty display operators to ASCII, forwards the device locale's
- * digit-group and decimal separators, and turns native exceptions into an
- * [EvalResult].
+ * digit-group and decimal separators + the angle mode, and turns native
+ * exceptions into an [EvalResult].
  */
 object CalcEngine {
 
@@ -35,12 +49,9 @@ object CalcEngine {
         if (NativeBridge.available) runCatching { NativeBridge.nativeVersion() }.getOrDefault("?")
         else "unavailable"
 
-    /**
-     * @param grouped whether to insert digit-group separators in the result
-     * @param locale  supplies the group/decimal separator characters
-     */
     fun evaluate(
         expression: String,
+        angle: AngleMode = AngleMode.RAD,
         grouped: Boolean = true,
         locale: Locale = Locale.getDefault(),
     ): EvalResult {
@@ -52,7 +63,9 @@ object CalcEngine {
         val groupSep = if (grouped) symbols.groupingSeparator else NO_GROUPING
 
         return try {
-            val out = NativeBridge.nativeEval(ascii, groupSep, symbols.decimalSeparator, MAX_DECIMALS)
+            val out = NativeBridge.nativeEval(
+                ascii, groupSep, symbols.decimalSeparator, MAX_DECIMALS, angle.code,
+            )
             if (out == null) EvalResult.Error("Error") else EvalResult.Ok(out)
         } catch (e: ArithmeticException) {
             EvalResult.Error(friendly(e.message))
@@ -61,11 +74,13 @@ object CalcEngine {
         }
     }
 
-    /** Map operators to ASCII and drop any grouping characters/whitespace. */
+    /** Map operators/named symbols to ASCII and drop grouping characters. */
     fun normalize(display: String): String = buildString(display.length) {
         for (c in display) {
             when {
                 c == '÷' -> append('/')
+                c == '√' -> append("sqrt")
+                c == 'π' -> append("pi")
                 c in TIMES -> append('*')
                 c in MINUSES -> append('-')
                 c == ',' || c.isWhitespace() -> Unit
@@ -79,7 +94,7 @@ object CalcEngine {
         val t = ascii.trimEnd()
         if (t.isEmpty()) return true
         return when (t.last()) {
-            '+', '-', '*', '/', '^', '(', '.' -> true
+            '+', '-', '*', '/', '^', '(', '.', ',' -> true
             else -> t.count { it == '(' } > t.count { it == ')' }
         }
     }
@@ -89,8 +104,8 @@ object CalcEngine {
         msg.contains("divi", ignoreCase = true) -> "Can't divide by zero"
         msg.contains("too large") -> "Number too large"
         msg.contains("negative") || msg.contains("non-positive") ||
-            msg.contains("real number") -> "Not a real number"
-        msg.contains("factorial") -> "Not a real number"
+            msg.contains("real number") || msg.contains("defined on") -> "Not a real number"
+        msg.contains("factorial") || msg.contains("integer") -> "Bad input"
         else -> "Error"
     }
 }

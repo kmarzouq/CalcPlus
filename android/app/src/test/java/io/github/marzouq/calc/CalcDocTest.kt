@@ -73,4 +73,28 @@ class CalcDocTest {
     @Test fun asciiExpressionNormalizes() {
         assertTrue(doc(Key.D6, Key.DIV, Key.D2).asciiExpression == "6/2")
     }
+
+    @Test fun functionKeysInsertOpenCall() {
+        assertEquals("sin(", doc(Key.SIN).expr)
+        assertEquals("sin(30", doc(Key.SIN, Key.D3, Key.D0).expr)
+        assertEquals("√(", doc(Key.SQRT).expr)
+        assertEquals("sqrt(9", doc(Key.SQRT, Key.D9).asciiExpression)
+    }
+
+    @Test fun impliedTimesBeforeFunctionsAndConstants() {
+        assertEquals("2×sin(", doc(Key.D2, Key.SIN).expr)
+        assertEquals("2×π", doc(Key.D2, Key.PI).expr)
+        assertEquals("2*pi", doc(Key.D2, Key.PI).asciiExpression)
+    }
+
+    @Test fun suffixKeysOnlyAfterValue() {
+        assertEquals("5!", doc(Key.D5, Key.FACT).expr)
+        assertEquals("5^-1", doc(Key.D5, Key.RECIP).expr)
+        assertEquals("", doc(Key.FACT).expr)
+    }
+
+    @Test fun deleteRemovesWholeFunctionToken() {
+        assertEquals("", doc(Key.SIN, Key.DELETE).expr)
+        assertEquals("2", doc(Key.D2, Key.SIN, Key.DELETE).expr)
+    }
 }

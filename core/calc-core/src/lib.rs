@@ -22,20 +22,28 @@ pub mod lexer;
 pub mod parser;
 
 pub use error::CalcError;
-pub use eval::Context;
+pub use eval::{AngleMode, Context};
 pub use format::FormatOptions;
 pub use rust_decimal::Decimal;
 
-/// Evaluate `input` against a fresh context and return the numeric result.
+/// Evaluate `input` against a fresh radian-mode context.
 pub fn evaluate(input: &str) -> Result<Decimal, CalcError> {
     Context::new().evaluate(input)
 }
 
-/// Evaluate `input` and render the result with `opts` (grouping, precision).
+/// Evaluate `input` and render the result with `opts` (grouping, precision,
+/// scientific-notation thresholds), interpreting angles per `angle`.
 ///
 /// This is the entry point the FFI layer calls: one string in, one string out.
-pub fn evaluate_to_string(input: &str, opts: &FormatOptions) -> Result<String, CalcError> {
-    evaluate(input).map(|value| format::render(value, opts))
+pub fn evaluate_to_string(
+    input: &str,
+    opts: &FormatOptions,
+    angle: AngleMode,
+) -> Result<String, CalcError> {
+    Context::new()
+        .with_angle(angle)
+        .evaluate(input)
+        .map(|value| format::render(value, opts))
 }
 
 #[cfg(test)]
@@ -90,14 +98,24 @@ mod tests {
     #[test]
     fn formatting() {
         let opts = FormatOptions::default();
+        let r = AngleMode::Radians;
         assert_eq!(
-            evaluate_to_string("1000000 + 234", &opts).unwrap(),
+            evaluate_to_string("1000000 + 234", &opts, r).unwrap(),
             "1,000,234"
         );
         assert_eq!(
-            evaluate_to_string("1 / 3", &opts).unwrap(),
+            evaluate_to_string("1 / 3", &opts, r).unwrap(),
             "0.333333333333"
         );
-        assert_eq!(evaluate_to_string("2 / 4", &opts).unwrap(), "0.5");
+        assert_eq!(evaluate_to_string("2 / 4", &opts, r).unwrap(), "0.5");
+    }
+
+    #[test]
+    fn degrees_mode_via_entry_point() {
+        let opts = FormatOptions::default();
+        assert_eq!(
+            evaluate_to_string("sin(30)", &opts, AngleMode::Degrees).unwrap(),
+            "0.5",
+        );
     }
 }

@@ -1,12 +1,12 @@
 package io.github.marzouq.calc
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import android.app.Activity
 import io.github.marzouq.calc.databinding.ActivityMainBinding
 import io.github.marzouq.calc.databinding.HistoryRowBinding
 
@@ -15,6 +15,9 @@ class MainActivity : Activity() {
     private lateinit var ui: ActivityMainBinding
     private lateinit var history: History
     private var doc = CalcDoc()
+    private var angle = AngleMode.RAD
+
+    private val prefs by lazy { getSharedPreferences("settings", Context.MODE_PRIVATE) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,17 +25,32 @@ class MainActivity : Activity() {
         setContentView(ui.root)
         history = History(this)
 
+        angle = AngleMode.fromName(prefs.getString(PREF_ANGLE, null))
+        val sciOpen = prefs.getBoolean(PREF_SCI, false)
         savedInstanceState?.getString(STATE_EXPR)?.let {
             doc = CalcDoc(it, savedInstanceState.getBoolean(STATE_EVAL))
         }
 
         wireKeypad()
+        wireScientific()
+
+        ui.angleToggle.setOnClickListener {
+            angle = angle.next()
+            prefs.edit().putString(PREF_ANGLE, angle.name).apply()
+            ui.angleToggle.text = angle.label
+            render()
+        }
+        ui.sciToggle.setOnClickListener { setSciVisible(ui.sciPad.visibility != View.VISIBLE) }
+
         ui.keyClear.setOnLongClickListener {
             history.clear(); refreshHistory(); toast(getString(R.string.history_cleared)); true
         }
+        ui.keyDelete.setOnLongClickListener { doc = CalcDoc(); render(); true }
         ui.formula.setOnLongClickListener { copy(doc.expr); true }
         ui.result.setOnLongClickListener { copy(ui.result.text.toString()); true }
 
+        ui.angleToggle.text = angle.label
+        setSciVisible(sciOpen)
         render()
         refreshHistory()
     }
@@ -54,7 +72,24 @@ class MainActivity : Activity() {
             ui.keyDelete to Key.DELETE, ui.keyClear to Key.CLEAR, ui.keyEquals to Key.EQUALS,
         )
         for ((button, key) in map) button.setOnClickListener { press(key) }
-        ui.keyDelete.setOnLongClickListener { doc = CalcDoc(); render(); true }
+    }
+
+    private fun wireScientific() {
+        val map = mapOf(
+            ui.keySin to Key.SIN, ui.keyCos to Key.COS, ui.keyTan to Key.TAN,
+            ui.keyAsin to Key.ASIN, ui.keyAcos to Key.ACOS, ui.keyAtan to Key.ATAN,
+            ui.keyLn to Key.LN, ui.keyLog to Key.LOG, ui.keySqrt to Key.SQRT,
+            ui.keyPow to Key.POW, ui.keyFact to Key.FACT, ui.keyRecip to Key.RECIP,
+            ui.keyPi to Key.PI, ui.keyEuler to Key.EULER,
+            ui.keyLparen to Key.LPAREN, ui.keyRparen to Key.RPAREN,
+        )
+        for ((button, key) in map) button.setOnClickListener { press(key) }
+    }
+
+    private fun setSciVisible(visible: Boolean) {
+        ui.sciPad.visibility = if (visible) View.VISIBLE else View.GONE
+        ui.sciToggle.alpha = if (visible) 1f else 0.55f
+        prefs.edit().putBoolean(PREF_SCI, visible).apply()
     }
 
     private fun press(key: Key) {
@@ -68,7 +103,7 @@ class MainActivity : Activity() {
 
     private fun commit() {
         if (doc.isEmpty) return
-        when (val r = CalcEngine.evaluate(doc.expr, grouped = true)) {
+        when (val r = CalcEngine.evaluate(doc.expr, angle)) {
             is EvalResult.Ok -> {
                 history.add(doc.expr, r.text)
                 doc = CalcDoc(r.text, evaluated = true)
@@ -84,7 +119,7 @@ class MainActivity : Activity() {
         ui.formula.text = doc.expr
         ui.result.text = when {
             doc.evaluated || doc.isEmpty -> ""
-            else -> when (val r = CalcEngine.evaluate(doc.expr, grouped = true)) {
+            else -> when (val r = CalcEngine.evaluate(doc.expr, angle)) {
                 is EvalResult.Ok -> "= ${r.text}"
                 else -> ""
             }
@@ -124,5 +159,7 @@ class MainActivity : Activity() {
     private companion object {
         const val STATE_EXPR = "expr"
         const val STATE_EVAL = "evaluated"
+        const val PREF_ANGLE = "angle_mode"
+        const val PREF_SCI = "sci_open"
     }
 }

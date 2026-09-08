@@ -32,6 +32,20 @@ data class CalcDoc(
         Key.LPAREN -> openParen()
         Key.RPAREN -> closeParen()
         Key.NEG -> toggleSign()
+
+        Key.SIN -> func("sin(")
+        Key.COS -> func("cos(")
+        Key.TAN -> func("tan(")
+        Key.ASIN -> func("asin(")
+        Key.ACOS -> func("acos(")
+        Key.ATAN -> func("atan(")
+        Key.LN -> func("ln(")
+        Key.LOG -> func("log(")
+        Key.SQRT -> func("√(")
+        Key.PI -> value("π")
+        Key.EULER -> value("e")
+        Key.FACT -> suffix("!")
+        Key.RECIP -> suffix("^-1")
     }
 
     // --- individual rules -------------------------------------------------
@@ -108,16 +122,46 @@ data class CalcDoc(
 
     private fun delete(): CalcDoc {
         if (expr.isEmpty()) return this
-        // Drop the implicit "×" we may have inserted before "(".
-        val dropped = expr.dropLast(1)
-        val trimmed = if (dropped.isNotEmpty() && dropped.last() == '×' &&
-            expr.last() == '('
-        ) {
-            dropped.dropLast(1)
+        var s = if (expr.last() == '(') {
+            // Drop a whole "sin(" / "√(" token, not one letter at a time.
+            expr.dropLast(1).dropLastWhile { it.isLetter() || it == '√' }
         } else {
-            dropped
+            expr.dropLast(1)
         }
-        return CalcDoc(trimmed)
+        // Also drop an implicit "×" left dangling in front of the removed token.
+        if (s.isNotEmpty() && s.last() == '×' &&
+            expr.getOrNull(s.length)?.let { it.isLetter() || it == '√' || it == '(' } == true
+        ) {
+            s = s.dropLast(1)
+        }
+        return CalcDoc(s)
+    }
+
+    /** Insert a function call like `sin(`; glue an implicit `×` after a value. */
+    private fun func(token: String): CalcDoc {
+        val base = freshIfEvaluated()
+        return CalcDoc(base + glue(base) + token)
+    }
+
+    /** Insert a constant / value token like `π` or `e`. */
+    private fun value(token: String): CalcDoc {
+        val base = freshIfEvaluated()
+        return CalcDoc(base + glue(base) + token)
+    }
+
+    /** Append a postfix operator (`!`, `^-1`) — only after a value. */
+    private fun suffix(token: String): CalcDoc {
+        val last = expr.lastOrNull() ?: return this
+        return if (last.isDigit() || last == ')' || last == '%' || last == 'π' || last == 'e') {
+            CalcDoc("$expr$token")
+        } else {
+            this
+        }
+    }
+
+    private fun glue(base: String): String {
+        val last = base.lastOrNull() ?: return ""
+        return if (last.isDigit() || last == ')' || last == '%' || last == 'π' || last == 'e') "×" else ""
     }
 
     private fun trailingNumber(s: String): String = s.substring(numberStart(s))
