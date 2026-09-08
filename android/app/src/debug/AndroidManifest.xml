@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Debug-only: renders the widget layout at the three lock-screen
+             column widths for visual review. Not shipped in release. -->
+        <activity
+            android:name=".WidgetPreviewActivity"
+            android:exported="true"
+            android:label="Widget preview" />
+    </application>
+</manifest>

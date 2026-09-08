@@ -125,7 +125,6 @@ class MainActivity : Activity() {
                 else -> ""
             }
         }
-        ui.formulaScroll.post { ui.formulaScroll.fullScroll(View.FOCUS_RIGHT) }
     }
 
     private fun refreshHistory() {
