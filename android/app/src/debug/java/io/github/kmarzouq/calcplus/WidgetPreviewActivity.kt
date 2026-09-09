@@ -31,21 +31,22 @@ class WidgetPreviewActivity : Activity() {
             setPadding(dp(16), dp(8), dp(16), dp(8))
         }
 
-        for ((label, w, h) in listOf(
-            Triple("1 / 3  (narrow)", 124, 236),
-            Triple("2 / 3  (medium)", 190, 250),
-            Triple("3 / 3  (wide)", 280, 262),
+        data class P(val label: String, val layout: Int, val w: Int, val h: Int)
+        for (p in listOf(
+            P("basic · 1/3", R.layout.widget_calculator, 124, 236),
+            P("basic · 3/3", R.layout.widget_calculator, 280, 262),
+            P("scientific", R.layout.widget_sci, 260, 420),
+            P("programmer", R.layout.widget_prog, 360, 360),
         )) {
             column.addView(TextView(this).apply {
-                text = label
+                text = p.label
                 setTextColor(Color.GRAY)
                 setPadding(0, dp(16), 0, dp(6))
             })
             val holder = LinearLayout(this)
-            val v: View = layoutInflater.inflate(R.layout.widget_calculator, holder, false)
-            // The real widget fills these via RemoteViews; do it here for the preview.
+            val v: View = layoutInflater.inflate(p.layout, holder, false)
             v.findViewById<TextView>(R.id.wFormula)?.text = "12×3+4 = 40"
-            holder.addView(v, ViewGroup.LayoutParams(dp(w), dp(h)))
+            holder.addView(v, ViewGroup.LayoutParams(dp(p.w), dp(p.h)))
             column.addView(holder)
         }
 

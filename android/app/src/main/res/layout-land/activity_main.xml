@@ -50,7 +50,7 @@
         <ImageButton
             android:id="@+id/programmerButton"
             style="@style/ToolbarIcon"
-            android:src="@drawable/ic_code"
+            android:src="@drawable/ic_binary"
             android:contentDescription="@string/cd_programmer" />
 
         <ImageButton

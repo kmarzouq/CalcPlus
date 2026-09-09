@@ -8,9 +8,10 @@ distributed via Obtainium.
   no Material library. Release APK ≈ **610 KB**.
 - **Rust core, Kotlin shell.** All arithmetic lives in `calc-core` (Rust,
   `no_std`); Kotlin does UI and the widget.
-- **Interactive lock-screen widget.** Every key is a broadcast, so the keypad
-  works while the device is locked. Responsive across the 1/3, 2/3 and 3/3
-  lock-screen widget columns.
+- **Interactive lock-screen widgets — basic, scientific, and programmer.**
+  Every key is a self-targeted broadcast, so the keypads work while the device
+  is locked. The basic widget is responsive across the 1/3, 2/3 and 3/3
+  lock-screen columns; the programmer widget's BASE key cycles HEX / DEC / BIN.
 - **Works like the stock calculator.** Circular keys that compress into
   rounded rectangles when you tap **sci**, live result preview, a horizontally
   scrolling formula, persistent history, copy/paste, digit grouping, keypress
@@ -69,7 +70,8 @@ core/                 Cargo workspace
 android/
   app/                 Kotlin: MainActivity, SettingsActivity, HistoryActivity,
                        GraphActivity + GraphView, ProgrammerActivity + ProgDoc,
-                       widget/, CalcDoc (pure input model), CalcEngine (JNI wrapper)
+                       widget/ (basic · scientific · programmer AppWidgetProviders),
+                       CalcDoc (pure input model), CalcEngine (JNI wrapper)
 ```
 
 Theme switching is done without AppCompat — `BaseActivity` overrides the night

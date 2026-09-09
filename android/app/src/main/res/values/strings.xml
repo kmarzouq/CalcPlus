@@ -13,7 +13,7 @@
     <string name="key_negate">±</string>
     <string name="key_dot">.</string>
 
-    <string name="sci_toggle">sci</string>
+    <string name="sci_toggle">SCI</string>
 
     <string name="cd_delete">Delete last entry</string>
     <string name="cd_clear">Clear</string>
@@ -69,5 +69,10 @@
     <string name="about_version">Version %1$s</string>
     <string name="about_engine">Engine %1$s · GPL-2.0-only</string>
 
-    <string name="widget_description">A small calculator for your home or lock screen.</string>
+    <string name="widget_basic_label">CalcPlus</string>
+    <string name="widget_description">Basic calculator — works on the lock screen.</string>
+    <string name="widget_sci_label">CalcPlus — Scientific</string>
+    <string name="widget_sci_description">Scientific calculator: trig, logs, roots, powers, π.</string>
+    <string name="widget_prog_label">CalcPlus — Programmer</string>
+    <string name="widget_prog_description">Programmer calculator: hex entry, bitwise, shifts; BASE cycles HEX/DEC/BIN.</string>
 </resources>

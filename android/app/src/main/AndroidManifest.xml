@@ -54,17 +54,43 @@
             android:configChanges="keyboardHidden"
             android:parentActivityName=".MainActivity" />
 
-        <!-- Interactive calculator widget. Works on the home screen and, on
-             Android 16 QPR2+ / GrapheneOS, the lock screen widget page. -->
+        <!-- Interactive calculator widgets. Every key is a self-targeted
+             broadcast, so they work on the home screen and, on Android 16
+             QPR2+ / GrapheneOS, the lock screen widget page. -->
         <receiver
             android:name=".widget.CalculatorWidgetProvider"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/widget_basic_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/calculator_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.SciWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_sci_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_sci_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.ProgWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_prog_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_prog_info" />
         </receiver>
     </application>
 

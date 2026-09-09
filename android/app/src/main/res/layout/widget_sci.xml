@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Scientific calculator widget. One layout; SciWidgetProvider builds three
+  RemoteViews (narrow / medium / wide) and only varies text sizes.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_background"
+    android:padding="6dp">
+
+    <LinearLayout
+        android:id="@+id/wDisplayArea"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
+        android:orientation="vertical"
+        android:gravity="end|center_vertical"
+        android:paddingHorizontal="6dp">
+
+        <TextView
+            android:id="@+id/wFormula"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="start"
+            android:textColor="@color/widget_display_text"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/wResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="start"
+            android:textColor="@color/widget_result_text"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/WidgetRow">
+        <Button android:id="@+id/wKeySin" style="@style/WidgetKey.Op" android:text="sin" />
+        <Button android:id="@+id/wKeyCos" style="@style/WidgetKey.Op" android:text="cos" />
+        <Button android:id="@+id/wKeyTan" style="@style/WidgetKey.Op" android:text="tan" />
+        <Button android:id="@+id/wKeySqrt" style="@style/WidgetKey.Op" android:text="√" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/WidgetRow">
+        <Button android:id="@+id/wKeyLn" style="@style/WidgetKey.Op" android:text="ln" />
+        <Button android:id="@+id/wKeyLog" style="@style/WidgetKey.Op" android:text="log" />
+        <Button android:id="@+id/wKeyPi" style="@style/WidgetKey.Op" android:text="π" />
+        <Button android:id="@+id/wKeyPow" style="@style/WidgetKey.Op" android:text="^" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/WidgetRow">
+        <Button android:id="@+id/wKeyLparen" style="@style/WidgetKey.Op" android:text="(" />
+        <Button android:id="@+id/wKeyRparen" style="@style/WidgetKey.Op" android:text=")" />
+        <Button android:id="@+id/wKeySqr" style="@style/WidgetKey.Op" android:text="x²" />
+        <Button android:id="@+id/wKeyFact" style="@style/WidgetKey.Op" android:text="x!" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/WidgetRow">
+        <Button android:id="@+id/wKeyClear" style="@style/WidgetKey"
+            android:text="@string/key_clear" android:textColor="@color/widget_key_clear_text" />
+        <Button android:id="@+id/wKeyDelete" style="@style/WidgetKey" android:text="@string/key_delete" />
+        <Button android:id="@+id/wKeyPct" style="@style/WidgetKey.Op" android:text="@string/key_percent" />
+        <Button android:id="@+id/wKeyDiv" style="@style/WidgetKey.Op" android:text="@string/key_divide" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/WidgetRow">
+        <Button android:id="@+id/wKey7" style="@style/WidgetKey" android:text="7" />
+        <Button android:id="@+id/wKey8" style="@style/WidgetKey" android:text="8" />
+        <Button android:id="@+id/wKey9" style="@style/WidgetKey" android:text="9" />
+        <Button android:id="@+id/wKeyMul" style="@style/WidgetKey.Op" android:text="@string/key_multiply" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/WidgetRow">
+        <Button android:id="@+id/wKey4" style="@style/WidgetKey" android:text="4" />
+        <Button android:id="@+id/wKey5" style="@style/WidgetKey" android:text="5" />
+        <Button android:id="@+id/wKey6" style="@style/WidgetKey" android:text="6" />
+        <Button android:id="@+id/wKeySub" style="@style/WidgetKey.Op" android:text="@string/key_subtract" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/WidgetRow">
+        <Button android:id="@+id/wKey1" style="@style/WidgetKey" android:text="1" />
+        <Button android:id="@+id/wKey2" style="@style/WidgetKey" android:text="2" />
+        <Button android:id="@+id/wKey3" style="@style/WidgetKey" android:text="3" />
+        <Button android:id="@+id/wKeyAdd" style="@style/WidgetKey.Op" android:text="@string/key_add" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/WidgetRow">
+        <Button android:id="@+id/wKeyNeg" style="@style/WidgetKey" android:text="@string/key_negate" />
+        <Button android:id="@+id/wKey0" style="@style/WidgetKey" android:text="0" />
+        <Button android:id="@+id/wKeyDot" style="@style/WidgetKey" android:text="@string/key_dot" />
+        <Button android:id="@+id/wKeyEquals" style="@style/WidgetKey.Equals" android:text="@string/key_equals" />
+    </LinearLayout>
+</LinearLayout>
