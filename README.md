@@ -11,16 +11,23 @@ Accrescent, distributed via Obtainium for now.
 - **Interactive lock-screen widget.** Every key is a broadcast, so the keypad
   works while the device is locked. Responsive across the 1/3, 2/3 and 3/3
   lock-screen widget columns.
-- **History.** Persistent, on-device, like the stock calculator.
+- **Feature parity with the stock calculator** — live result preview, a
+  scientific keypad (auto-shown in landscape), persistent history, copy/paste,
+  digit grouping, keypress haptics, and a **Light / Dark / System** theme.
 
 ## Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/basic.png" width="31%" alt="Calculator with history and a live percent preview">
+  <img src="docs/screenshots/basic.png" width="31%" alt="Calculator with a live percent preview">
   &nbsp;
-  <img src="docs/screenshots/scientific.png" width="31%" alt="Scientific keypad in degrees mode, sin(45)">
+  <img src="docs/screenshots/scientific.png" width="31%" alt="Scientific keypad in degrees mode, sin(30)">
   &nbsp;
-  <img src="docs/screenshots/widget.png" width="31%" alt="Widget rendered at the 1/3, 2/3 and 3/3 lock-screen column widths">
+  <img src="docs/screenshots/widget.png" width="31%" alt="Widget at the 1/3, 2/3 and 3/3 lock-screen column widths">
+</p>
+<p align="center">
+  <img src="docs/screenshots/dark.png" width="31%" alt="Dark theme with the scientific keypad open">
+  &nbsp;
+  <img src="docs/screenshots/settings.png" width="31%" alt="Settings: theme, keypress haptics, clear history">
 </p>
 
 ## Status — Phases 0–3 done
@@ -41,8 +48,14 @@ core/                 Cargo workspace
   calc-core/           lexer · Pratt parser · decimal evaluator (no_std)
   calc-ffi/            JNI bridge -> libcalc.so
 android/
-  app/                 Kotlin: MainActivity, widget/, input model, history
+  app/                 Kotlin: MainActivity, SettingsActivity, HistoryActivity,
+                       widget/, CalcDoc (pure input model), CalcEngine (JNI wrapper)
 ```
+
+Theme switching is done without AppCompat — `BaseActivity` overrides the night
+bit of the `Configuration` in `attachBaseContext`, so `-night` resources
+resolve to the chosen mode and the manifest stays dependency- and
+permission-free.
 
 The engine is `Decimal` (base-10, 28–29 significant digits) — the same kind of
 arithmetic a TI-84 does, so `0.1 + 0.2 == 0.3`. It is *not* a CAS: `1/3`

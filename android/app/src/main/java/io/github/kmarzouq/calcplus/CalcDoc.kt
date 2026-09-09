@@ -43,10 +43,24 @@ data class CalcDoc(
         Key.LN -> func("ln(")
         Key.LOG -> func("log(")
         Key.SQRT -> func("√(")
+        Key.ABS -> func("abs(")
         Key.PI -> value("π")
         Key.EULER -> value("e")
         Key.FACT -> suffix("!")
-        Key.RECIP -> suffix("^-1")
+        Key.RECIP -> suffix("⁻¹")
+        Key.SQR -> suffix("²")
+        Key.EE -> ee()
+        Key.COMMA -> comma()
+    }
+
+    /** Append a literal number (e.g. a result pulled from history), grouping stripped. */
+    fun appendLiteral(literal: String): CalcDoc {
+        val num = literal.filter { it.isDigit() || it == '.' || it == 'e' || it == 'E' }
+        val neg = literal.trimStart().firstOrNull().let { it == '-' || it == '−' }
+        val digits = if (neg) "−$num" else num
+        if (num.isEmpty()) return this
+        val base = freshIfEvaluated()
+        return CalcDoc(base + glue(base) + digits)
     }
 
     // --- individual rules -------------------------------------------------
@@ -84,29 +98,17 @@ data class CalcDoc(
         return CalcDoc(base + op, evaluated = false)
     }
 
-    private fun percent(): CalcDoc {
-        val base = expr
-        val last = base.lastOrNull() ?: return this
-        return if (last.isDigit() || last == ')' || last == '%') CalcDoc("$base%") else this
-    }
+    private fun percent(): CalcDoc =
+        if (endsWithValue(expr)) CalcDoc("$expr%") else this
 
     private fun openParen(): CalcDoc {
         val base = freshIfEvaluated()
-        val last = base.lastOrNull()
-        val glue = if (last != null && (last.isDigit() || last == ')' || last == '%')) "×(" else "("
-        return CalcDoc(base + glue)
+        return CalcDoc(base + (if (endsWithValue(base)) "×(" else "("))
     }
 
     private fun closeParen(): CalcDoc {
-        val base = expr
-        val opens = base.count { it == '(' }
-        val closes = base.count { it == ')' }
-        val last = base.lastOrNull() ?: return this
-        return if (opens > closes && (last.isDigit() || last == ')' || last == '%')) {
-            CalcDoc("$base)")
-        } else {
-            this
-        }
+        val opens = expr.count { it == '(' } - expr.count { it == ')' }
+        return if (opens > 0 && endsWithValue(expr)) CalcDoc("$expr)") else this
     }
 
     private fun toggleSign(): CalcDoc {
@@ -150,20 +152,26 @@ data class CalcDoc(
         return CalcDoc(base + glue(base) + token)
     }
 
-    /** Append a postfix operator (`!`, `^-1`) — only after a value. */
-    private fun suffix(token: String): CalcDoc {
-        val last = expr.lastOrNull() ?: return this
-        return if (last.isDigit() || last == ')' || last == '%' || last == 'π' || last == 'e') {
-            CalcDoc("$expr$token")
-        } else {
-            this
-        }
+    /** Append a postfix token (`!`, `²`, `⁻¹`) — only after a value. */
+    private fun suffix(token: String): CalcDoc =
+        if (endsWithValue(expr)) CalcDoc("$expr$token") else this
+
+    /** `EE` — scientific-notation entry, only right after a digit. */
+    private fun ee(): CalcDoc =
+        if (expr.lastOrNull()?.isDigit() == true) CalcDoc("${expr}E") else this
+
+    /** Argument separator, only inside an open function call after a value. */
+    private fun comma(): CalcDoc {
+        val opens = expr.count { it == '(' } - expr.count { it == ')' }
+        return if (opens > 0 && endsWithValue(expr)) CalcDoc("$expr,") else this
     }
 
-    private fun glue(base: String): String {
-        val last = base.lastOrNull() ?: return ""
-        return if (last.isDigit() || last == ')' || last == '%' || last == 'π' || last == 'e') "×" else ""
+    private fun endsWithValue(s: String): Boolean {
+        val c = s.lastOrNull() ?: return false
+        return c.isDigit() || c in ")%π²!" || c == 'e' || c == '¹'
     }
+
+    private fun glue(base: String): String = if (endsWithValue(base)) "×" else ""
 
     private fun trailingNumber(s: String): String = s.substring(numberStart(s))
 

@@ -18,8 +18,8 @@ enum class Key {
 
     // scientific (activity only)
     SIN, COS, TAN, ASIN, ACOS, ATAN,
-    LN, LOG, SQRT, FACT, RECIP,
-    PI, EULER;
+    LN, LOG, SQRT, SQR, FACT, RECIP,
+    PI, EULER, ABS, EE, COMMA;
 
     companion object {
         /** Parse the token name stored in a PendingIntent extra. */

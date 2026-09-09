@@ -3,26 +3,30 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="?android:attr/selectableItemBackground"
-    android:paddingHorizontal="4dp"
-    android:paddingVertical="10dp"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="14dp"
     android:gravity="end">
 
     <TextView
         android:id="@+id/rowExpression"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="end"
         android:maxLines="1"
         android:ellipsize="start"
+        android:background="?android:attr/selectableItemBackground"
         android:textColor="@color/result_text"
-        android:textSize="14sp" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/rowResult"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="end"
         android:maxLines="1"
         android:ellipsize="start"
+        android:background="?android:attr/selectableItemBackground"
         android:textColor="@color/display_text"
-        android:textSize="20sp" />
+        android:textSize="26sp"
+        android:paddingTop="2dp" />
 </LinearLayout>

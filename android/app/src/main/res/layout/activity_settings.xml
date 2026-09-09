@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/window_bg"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/AppBar">
+        <ImageButton
+            android:id="@+id/back"
+            style="@style/AppBarIcon"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="@string/cd_back" />
+        <TextView
+            style="@style/AppBarTitle"
+            android:text="@string/settings_title" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="24dp">
+
+            <TextView style="@style/SectionHeader" android:text="@string/settings_theme" />
+
+            <RadioGroup
+                android:id="@+id/themeGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton android:id="@+id/themeSystem" style="@style/SettingRadio"
+                    android:text="@string/theme_system" />
+                <RadioButton android:id="@+id/themeLight" style="@style/SettingRadio"
+                    android:text="@string/theme_light" />
+                <RadioButton android:id="@+id/themeDark" style="@style/SettingRadio"
+                    android:text="@string/theme_dark" />
+            </RadioGroup>
+
+            <View style="@style/SettingDivider" />
+
+            <TextView style="@style/SectionHeader" android:text="@string/settings_input" />
+
+            <CheckBox
+                android:id="@+id/haptics"
+                style="@style/SettingRadio"
+                android:text="@string/settings_haptics" />
+
+            <View style="@style/SettingDivider" />
+
+            <TextView style="@style/SectionHeader" android:text="@string/settings_data" />
+
+            <TextView
+                android:id="@+id/clearHistory"
+                style="@style/SettingRow"
+                android:drawableStart="@drawable/ic_delete"
+                android:drawablePadding="16dp"
+                android:text="@string/clear_history" />
+
+            <View style="@style/SettingDivider" />
+
+            <TextView style="@style/SectionHeader" android:text="@string/settings_about" />
+
+            <TextView android:id="@+id/aboutVersion" style="@style/SettingCaption" />
+            <TextView android:id="@+id/aboutEngine" style="@style/SettingCaption" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

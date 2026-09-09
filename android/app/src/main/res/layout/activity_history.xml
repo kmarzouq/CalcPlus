@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/window_bg"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/AppBar">
+        <ImageButton
+            android:id="@+id/back"
+            style="@style/AppBarIcon"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="@string/cd_back" />
+        <TextView
+            style="@style/AppBarTitle"
+            android:text="@string/history_title" />
+        <ImageButton
+            android:id="@+id/clear"
+            style="@style/AppBarIcon"
+            android:src="@drawable/ic_delete"
+            android:contentDescription="@string/clear_history" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/history_empty"
+        android:textColor="@color/result_text"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="bottom"
+            android:paddingVertical="8dp" />
+    </ScrollView>
+</LinearLayout>

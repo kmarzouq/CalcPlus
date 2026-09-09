@@ -90,12 +90,32 @@ class CalcDocTest {
 
     @Test fun suffixKeysOnlyAfterValue() {
         assertEquals("5!", doc(Key.D5, Key.FACT).expr)
-        assertEquals("5^-1", doc(Key.D5, Key.RECIP).expr)
+        assertEquals("5⁻¹", doc(Key.D5, Key.RECIP).expr)
+        assertEquals("9^-1", doc(Key.D9, Key.RECIP).asciiExpression)
+        assertEquals("4²", doc(Key.D4, Key.SQR).expr)
+        assertEquals("4^2", doc(Key.D4, Key.SQR).asciiExpression)
         assertEquals("", doc(Key.FACT).expr)
     }
 
     @Test fun deleteRemovesWholeFunctionToken() {
         assertEquals("", doc(Key.SIN, Key.DELETE).expr)
         assertEquals("2", doc(Key.D2, Key.SIN, Key.DELETE).expr)
+    }
+
+    @Test fun eeOnlyAfterDigit() {
+        assertEquals("3E", doc(Key.D3, Key.EE).expr)
+        assertEquals("3E8", doc(Key.D3, Key.EE, Key.D8).expr)
+        assertEquals("", doc(Key.EE).expr)
+    }
+
+    @Test fun commaOnlyInsideCall() {
+        assertEquals("log(2,", doc(Key.LOG, Key.D2, Key.COMMA).expr)
+        assertEquals("5", doc(Key.D5, Key.COMMA).expr) // no open call -> ignored
+    }
+
+    @Test fun appendLiteralStripsGrouping() {
+        assertEquals("1152", CalcDoc().appendLiteral("1,152").expr)
+        assertEquals("2×1152", CalcDoc("2×").appendLiteral("1,152").expr)
+        assertEquals("7", CalcDoc("42", evaluated = true).appendLiteral("7").expr)
     }
 }

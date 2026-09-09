@@ -75,17 +75,21 @@ object CalcEngine {
         }
     }
 
-    /** Map operators/named symbols to ASCII and drop grouping characters. */
+    /** Map the pretty display form to plain ASCII the engine can lex. */
     fun normalize(display: String): String = buildString(display.length) {
-        for (c in display) {
+        val src = display
+            .replace("⁻¹", "^-1")
+            .replace("²", "^2")
+            .replace("³", "^3")
+        for (c in src) {
             when {
                 c == '÷' -> append('/')
                 c == '√' -> append("sqrt")
                 c == 'π' -> append("pi")
                 c in TIMES -> append('*')
                 c in MINUSES -> append('-')
-                c == ',' || c.isWhitespace() -> Unit
-                else -> append(c)
+                c.isWhitespace() -> Unit
+                else -> append(c) // digits, letters, + - ^ ( ) , % ! . E
             }
         }
     }
@@ -95,7 +99,7 @@ object CalcEngine {
         val t = ascii.trimEnd()
         if (t.isEmpty()) return true
         return when (t.last()) {
-            '+', '-', '*', '/', '^', '(', '.', ',' -> true
+            '+', '-', '*', '/', '^', '(', '.', ',', 'E' -> true
             else -> t.count { it == '(' } > t.count { it == ')' }
         }
     }

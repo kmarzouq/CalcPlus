@@ -8,39 +8,77 @@
     android:paddingHorizontal="@dimen/screen_padding"
     android:paddingBottom="@dimen/screen_padding">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageButton
+            android:id="@+id/historyButton"
+            style="@style/ToolbarIcon"
+            android:src="@drawable/ic_history"
+            android:contentDescription="@string/cd_history" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/settingsButton"
+            style="@style/ToolbarIcon"
+            android:src="@drawable/ic_settings"
+            android:contentDescription="@string/cd_settings" />
+    </LinearLayout>
+
     <ScrollView
-        android:id="@+id/historyScroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true"
         android:scrollbars="none">
 
-        <LinearLayout
-            android:id="@+id/historyContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="bottom"
-            android:paddingTop="24dp" />
-    </ScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/historyEmpty"
+    <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/history_empty"
+        android:minHeight="16dp" />
+
+    <TextView
+        android:id="@+id/formula"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end|center_vertical"
+        android:maxLines="1"
+        android:ellipsize="start"
+        android:textColor="@color/display_text"
+        android:textSize="@dimen/display_formula_text"
+        android:textIsSelectable="true"
+        android:fontFamily="sans-serif-light" />
+
+    <TextView
+        android:id="@+id/result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end|center_vertical"
+        android:maxLines="1"
+        android:ellipsize="start"
+        android:minHeight="30dp"
         android:textColor="@color/result_text"
-        android:textSize="@dimen/history_text"
-        android:visibility="gone" />
+        android:textSize="@dimen/display_result_text" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:layout_marginTop="4dp">
 
         <Button
             android:id="@+id/angleToggle"
@@ -58,31 +96,6 @@
             android:text="f(x)" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/formula"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:gravity="end|center_vertical"
-        android:maxLines="1"
-        android:ellipsize="start"
-        android:scrollHorizontally="true"
-        android:textColor="@color/display_text"
-        android:textSize="@dimen/display_formula_text"
-        android:textIsSelectable="true"
-        android:fontFamily="sans-serif-light" />
-
-    <TextView
-        android:id="@+id/result"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="end|center_vertical"
-        android:maxLines="1"
-        android:ellipsize="start"
-        android:minHeight="28dp"
-        android:textColor="@color/result_text"
-        android:textSize="@dimen/display_result_text" />
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -98,31 +111,38 @@
         android:visibility="gone">
 
         <LinearLayout style="@style/CalcRow">
+            <Button android:id="@+id/keyLparen" style="@style/CalcKey.Sci" android:text="(" />
+            <Button android:id="@+id/keyRparen" style="@style/CalcKey.Sci" android:text=")" />
+            <Button android:id="@+id/keySqr" style="@style/CalcKey.Sci" android:text="x²" />
+            <Button android:id="@+id/keyPow" style="@style/CalcKey.Sci" android:text="^" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/CalcRow">
             <Button android:id="@+id/keySin" style="@style/CalcKey.Sci" android:text="sin" />
             <Button android:id="@+id/keyCos" style="@style/CalcKey.Sci" android:text="cos" />
             <Button android:id="@+id/keyTan" style="@style/CalcKey.Sci" android:text="tan" />
-            <Button android:id="@+id/keyPow" style="@style/CalcKey.Sci" android:text="^" />
+            <Button android:id="@+id/keySqrt" style="@style/CalcKey.Sci" android:text="√" />
         </LinearLayout>
 
         <LinearLayout style="@style/CalcRow">
             <Button android:id="@+id/keyAsin" style="@style/CalcKey.Sci" android:text="sin⁻¹" />
             <Button android:id="@+id/keyAcos" style="@style/CalcKey.Sci" android:text="cos⁻¹" />
             <Button android:id="@+id/keyAtan" style="@style/CalcKey.Sci" android:text="tan⁻¹" />
-            <Button android:id="@+id/keySqrt" style="@style/CalcKey.Sci" android:text="√" />
+            <Button android:id="@+id/keyRecip" style="@style/CalcKey.Sci" android:text="x⁻¹" />
         </LinearLayout>
 
         <LinearLayout style="@style/CalcRow">
             <Button android:id="@+id/keyLn" style="@style/CalcKey.Sci" android:text="ln" />
             <Button android:id="@+id/keyLog" style="@style/CalcKey.Sci" android:text="log" />
-            <Button android:id="@+id/keyRecip" style="@style/CalcKey.Sci" android:text="x⁻¹" />
             <Button android:id="@+id/keyFact" style="@style/CalcKey.Sci" android:text="x!" />
+            <Button android:id="@+id/keyEe" style="@style/CalcKey.Sci" android:text="EE" />
         </LinearLayout>
 
         <LinearLayout style="@style/CalcRow">
             <Button android:id="@+id/keyPi" style="@style/CalcKey.Sci" android:text="π" />
             <Button android:id="@+id/keyEuler" style="@style/CalcKey.Sci" android:text="e" />
-            <Button android:id="@+id/keyLparen" style="@style/CalcKey.Sci" android:text="(" />
-            <Button android:id="@+id/keyRparen" style="@style/CalcKey.Sci" android:text=")" />
+            <Button android:id="@+id/keyAbs" style="@style/CalcKey.Sci" android:text="|x|" />
+            <Button android:id="@+id/keyComma" style="@style/CalcKey.Sci" android:text="," />
         </LinearLayout>
     </LinearLayout>
 
@@ -176,5 +196,8 @@
                 android:text="@string/key_equals" />
         </LinearLayout>
     </LinearLayout>
+
+    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
