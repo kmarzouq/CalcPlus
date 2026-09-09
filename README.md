@@ -90,6 +90,27 @@ keyPassword=…
 
 Without it, `assembleRelease` produces an **unsigned** APK (CI signs it).
 
+## Running it locally
+
+[`run.sh`](run.sh) builds the app and puts it on a device or emulator:
+
+```sh
+./run.sh                 # build, boot the emulator in a window, install, launch
+./run.sh --headless      # no window (pair with --screenshot / --logcat)
+./run.sh --no-build      # skip Gradle, just reinstall the last build
+./run.sh --logcat        # follow the app's log after launching
+./run.sh --screenshot    # save ./calcplus.png and exit
+./run.sh --stop          # shut the emulator down
+```
+
+- A phone connected over adb (USB via `usbipd-win`, or wireless `adb connect`)
+  is always preferred over the emulator.
+- The emulator window needs WSLg (Windows 11). It also needs KVM: you're in the
+  `kvm` group, but run `wsl --shutdown` from Windows PowerShell **once** so the
+  session picks it up — otherwise `run.sh` falls back to a slower `newgrp`
+  relaunch, and without the group at all it's unusably slow.
+- First run creates the `calc36` AVD (Pixel 7, API 36) automatically.
+
 ## Distribution
 
 ### Obtainium (now)
