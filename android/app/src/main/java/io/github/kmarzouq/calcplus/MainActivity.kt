@@ -49,10 +49,10 @@ class MainActivity : BaseActivity() {
             ui.angleToggle.text = angle.label
             render()
         }
-        ui.sciToggle.setOnClickListener { setSciVisible(ui.sciPad.visibility != View.VISIBLE) }
+        ui.sciToggle.setOnClickListener { setSciVisible(ui.sciPad.root.visibility != View.VISIBLE) }
 
-        ui.keyClear.setOnLongClickListener { doc = CalcDoc(); render(); true }
-        ui.keyDelete.setOnLongClickListener { doc = CalcDoc(); render(); true }
+        ui.numPad.keyClear.setOnLongClickListener { doc = CalcDoc(); render(); true }
+        ui.numPad.keyDelete.setOnLongClickListener { doc = CalcDoc(); render(); true }
         ui.formula.setOnLongClickListener { showEditMenu(); true }
         ui.result.setOnLongClickListener { copy(ui.result.text.toString()); true }
 
@@ -68,11 +68,6 @@ class MainActivity : BaseActivity() {
         angle = Settings.angle(this)
         ui.angleToggle.text = angle.label
         render()
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        applySciForConfig(newConfig)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -102,28 +97,28 @@ class MainActivity : BaseActivity() {
 
     // --- keypad -------------------------------------------------------
 
-    private fun wireKeypad() {
+    private fun wireKeypad() = with(ui.numPad) {
         wire(
-            ui.key0 to Key.D0, ui.key1 to Key.D1, ui.key2 to Key.D2, ui.key3 to Key.D3,
-            ui.key4 to Key.D4, ui.key5 to Key.D5, ui.key6 to Key.D6, ui.key7 to Key.D7,
-            ui.key8 to Key.D8, ui.key9 to Key.D9,
-            ui.keyDot to Key.DOT, ui.keyNeg to Key.NEG,
-            ui.keyAdd to Key.ADD, ui.keySub to Key.SUB,
-            ui.keyMul to Key.MUL, ui.keyDiv to Key.DIV, ui.keyPct to Key.PCT,
-            ui.keyDelete to Key.DELETE, ui.keyClear to Key.CLEAR, ui.keyEquals to Key.EQUALS,
+            key0 to Key.D0, key1 to Key.D1, key2 to Key.D2, key3 to Key.D3,
+            key4 to Key.D4, key5 to Key.D5, key6 to Key.D6, key7 to Key.D7,
+            key8 to Key.D8, key9 to Key.D9,
+            keyDot to Key.DOT, keyNeg to Key.NEG,
+            keyAdd to Key.ADD, keySub to Key.SUB,
+            keyMul to Key.MUL, keyDiv to Key.DIV, keyPct to Key.PCT,
+            keyDelete to Key.DELETE, keyClear to Key.CLEAR, keyEquals to Key.EQUALS,
         )
     }
 
-    private fun wireScientific() {
+    private fun wireScientific() = with(ui.sciPad) {
         wire(
-            ui.keySin to Key.SIN, ui.keyCos to Key.COS, ui.keyTan to Key.TAN,
-            ui.keyAsin to Key.ASIN, ui.keyAcos to Key.ACOS, ui.keyAtan to Key.ATAN,
-            ui.keyLn to Key.LN, ui.keyLog to Key.LOG, ui.keySqrt to Key.SQRT,
-            ui.keySqr to Key.SQR, ui.keyPow to Key.POW,
-            ui.keyFact to Key.FACT, ui.keyRecip to Key.RECIP, ui.keyAbs to Key.ABS,
-            ui.keyPi to Key.PI, ui.keyEuler to Key.EULER,
-            ui.keyEe to Key.EE, ui.keyComma to Key.COMMA,
-            ui.keyLparen to Key.LPAREN, ui.keyRparen to Key.RPAREN,
+            keySin to Key.SIN, keyCos to Key.COS, keyTan to Key.TAN,
+            keyAsin to Key.ASIN, keyAcos to Key.ACOS, keyAtan to Key.ATAN,
+            keyLn to Key.LN, keyLog to Key.LOG, keySqrt to Key.SQRT,
+            keySqr to Key.SQR, keyPow to Key.POW,
+            keyFact to Key.FACT, keyRecip to Key.RECIP, keyAbs to Key.ABS,
+            keyPi to Key.PI, keyEuler to Key.EULER,
+            keyEe to Key.EE, keyComma to Key.COMMA,
+            keyLparen to Key.LPAREN, keyRparen to Key.RPAREN,
         )
     }
 
@@ -135,7 +130,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setSciVisible(visible: Boolean) {
-        ui.sciPad.visibility = if (visible) View.VISIBLE else View.GONE
+        ui.sciPad.root.visibility = if (visible) View.VISIBLE else View.GONE
         ui.sciToggle.alpha = if (visible) 1f else 0.55f
         Settings.setSciOpen(this, visible)
     }
@@ -143,7 +138,7 @@ class MainActivity : BaseActivity() {
     /** Scientific keys are always on in landscape (like the stock calculator). */
     private fun applySciForConfig(config: Configuration) {
         if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            ui.sciPad.visibility = View.VISIBLE
+            ui.sciPad.root.visibility = View.VISIBLE
             ui.sciToggle.visibility = View.GONE
         } else {
             ui.sciToggle.visibility = View.VISIBLE

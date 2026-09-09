@@ -12,15 +12,16 @@ Accrescent, distributed via Obtainium for now.
   works while the device is locked. Responsive across the 1/3, 2/3 and 3/3
   lock-screen widget columns.
 - **Feature parity with the stock calculator** — live result preview, a
-  scientific keypad (auto-shown in landscape), persistent history, copy/paste,
-  digit grouping, keypress haptics, and a **Light / Dark / System** theme.
+  scientific keypad (its own screen in landscape), persistent history,
+  copy/paste, digit grouping, keypress haptics, and a **Light / Dark / System**
+  theme. Rotates cleanly; state survives the rotation.
 
 ## Screenshots
 
 <p align="center">
   <img src="docs/screenshots/basic.png" width="31%" alt="Calculator with a live percent preview">
   &nbsp;
-  <img src="docs/screenshots/scientific.png" width="31%" alt="Scientific keypad in degrees mode, sin(30)">
+  <img src="docs/screenshots/scientific.png" width="31%" alt="Scientific keypad (sci), degrees mode, sin(30)">
   &nbsp;
   <img src="docs/screenshots/widget.png" width="31%" alt="Widget at the 1/3, 2/3 and 3/3 lock-screen column widths">
 </p>
@@ -28,6 +29,9 @@ Accrescent, distributed via Obtainium for now.
   <img src="docs/screenshots/dark.png" width="31%" alt="Dark theme with the scientific keypad open">
   &nbsp;
   <img src="docs/screenshots/settings.png" width="31%" alt="Settings: theme, keypress haptics, clear history">
+</p>
+<p align="center">
+  <img src="docs/screenshots/landscape.png" width="64%" alt="Landscape: scientific and numeric keypads side by side">
 </p>
 
 ## Status — Phases 0–3 done

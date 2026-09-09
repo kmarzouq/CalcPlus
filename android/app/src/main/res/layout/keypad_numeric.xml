@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Numeric / basic keys. Included (with an id) by the portrait and landscape
+     activity_main layouts. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/keyClear" style="@style/CalcKey.Clear"
+            android:text="@string/key_clear" android:contentDescription="@string/cd_clear" />
+        <Button android:id="@+id/keyDelete" style="@style/CalcKey"
+            android:text="@string/key_delete" android:contentDescription="@string/cd_delete" />
+        <Button android:id="@+id/keyPct" style="@style/CalcKey.Op"
+            android:text="@string/key_percent" />
+        <Button android:id="@+id/keyDiv" style="@style/CalcKey.Op"
+            android:text="@string/key_divide" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/key7" style="@style/CalcKey" android:text="7" />
+        <Button android:id="@+id/key8" style="@style/CalcKey" android:text="8" />
+        <Button android:id="@+id/key9" style="@style/CalcKey" android:text="9" />
+        <Button android:id="@+id/keyMul" style="@style/CalcKey.Op"
+            android:text="@string/key_multiply" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/key4" style="@style/CalcKey" android:text="4" />
+        <Button android:id="@+id/key5" style="@style/CalcKey" android:text="5" />
+        <Button android:id="@+id/key6" style="@style/CalcKey" android:text="6" />
+        <Button android:id="@+id/keySub" style="@style/CalcKey.Op"
+            android:text="@string/key_subtract" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/key1" style="@style/CalcKey" android:text="1" />
+        <Button android:id="@+id/key2" style="@style/CalcKey" android:text="2" />
+        <Button android:id="@+id/key3" style="@style/CalcKey" android:text="3" />
+        <Button android:id="@+id/keyAdd" style="@style/CalcKey.Op"
+            android:text="@string/key_add" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/keyNeg" style="@style/CalcKey"
+            android:text="@string/key_negate" />
+        <Button android:id="@+id/key0" style="@style/CalcKey" android:text="0" />
+        <Button android:id="@+id/keyDot" style="@style/CalcKey"
+            android:text="@string/key_dot" />
+        <Button android:id="@+id/keyEquals" style="@style/CalcKey.Equals"
+            android:text="@string/key_equals" />
+    </LinearLayout>
+</LinearLayout>

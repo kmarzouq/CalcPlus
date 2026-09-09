@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Scientific keys. Included (with an id) by the portrait and landscape
+     activity_main layouts so the two stay in sync. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/keyLparen" style="@style/CalcKey.Sci" android:text="(" />
+        <Button android:id="@+id/keyRparen" style="@style/CalcKey.Sci" android:text=")" />
+        <Button android:id="@+id/keySqr" style="@style/CalcKey.Sci" android:text="x²" />
+        <Button android:id="@+id/keyPow" style="@style/CalcKey.Sci" android:text="^" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/keySin" style="@style/CalcKey.Sci" android:text="sin" />
+        <Button android:id="@+id/keyCos" style="@style/CalcKey.Sci" android:text="cos" />
+        <Button android:id="@+id/keyTan" style="@style/CalcKey.Sci" android:text="tan" />
+        <Button android:id="@+id/keySqrt" style="@style/CalcKey.Sci" android:text="√" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/keyAsin" style="@style/CalcKey.Sci" android:text="sin⁻¹" />
+        <Button android:id="@+id/keyAcos" style="@style/CalcKey.Sci" android:text="cos⁻¹" />
+        <Button android:id="@+id/keyAtan" style="@style/CalcKey.Sci" android:text="tan⁻¹" />
+        <Button android:id="@+id/keyRecip" style="@style/CalcKey.Sci" android:text="x⁻¹" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/keyLn" style="@style/CalcKey.Sci" android:text="ln" />
+        <Button android:id="@+id/keyLog" style="@style/CalcKey.Sci" android:text="log" />
+        <Button android:id="@+id/keyFact" style="@style/CalcKey.Sci" android:text="x!" />
+        <Button android:id="@+id/keyEe" style="@style/CalcKey.Sci" android:text="EE" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/CalcRow">
+        <Button android:id="@+id/keyPi" style="@style/CalcKey.Sci" android:text="π" />
+        <Button android:id="@+id/keyEuler" style="@style/CalcKey.Sci" android:text="e" />
+        <Button android:id="@+id/keyAbs" style="@style/CalcKey.Sci" android:text="|x|" />
+        <Button android:id="@+id/keyComma" style="@style/CalcKey.Sci" android:text="," />
+    </LinearLayout>
+</LinearLayout>

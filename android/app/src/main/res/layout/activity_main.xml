@@ -39,165 +39,84 @@
         android:fillViewport="true"
         android:scrollbars="none">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:minHeight="16dp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="16dp" />
 
-    <TextView
-        android:id="@+id/formula"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="end|center_vertical"
-        android:maxLines="1"
-        android:ellipsize="start"
-        android:textColor="@color/display_text"
-        android:textSize="@dimen/display_formula_text"
-        android:textIsSelectable="true"
-        android:fontFamily="sans-serif-light" />
+            <TextView
+                android:id="@+id/formula"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:maxLines="1"
+                android:ellipsize="start"
+                android:textColor="@color/display_text"
+                android:textSize="@dimen/display_formula_text"
+                android:textIsSelectable="true"
+                android:fontFamily="sans-serif-light" />
 
-    <TextView
-        android:id="@+id/result"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="end|center_vertical"
-        android:maxLines="1"
-        android:ellipsize="start"
-        android:minHeight="30dp"
-        android:textColor="@color/result_text"
-        android:textSize="@dimen/display_result_text" />
+            <TextView
+                android:id="@+id/result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:maxLines="1"
+                android:ellipsize="start"
+                android:minHeight="30dp"
+                android:textColor="@color/result_text"
+                android:textSize="@dimen/display_result_text" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="4dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp">
 
-        <Button
-            android:id="@+id/angleToggle"
-            style="@style/CalcChip"
-            android:text="RAD" />
+                <Button
+                    android:id="@+id/angleToggle"
+                    style="@style/CalcChip"
+                    android:text="RAD" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/sciToggle"
-            style="@style/CalcChip"
-            android:text="f(x)" />
-    </LinearLayout>
+                <Button
+                    android:id="@+id/sciToggle"
+                    style="@style/CalcChip"
+                    android:text="@string/sci_toggle"
+                    android:contentDescription="@string/cd_sci" />
+            </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginVertical="8dp"
-        android:background="@color/divider" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="8dp"
+                android:background="@color/divider" />
 
-    <LinearLayout
-        android:id="@+id/sciPad"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginBottom="4dp"
-        android:visibility="gone">
+            <include
+                android:id="@+id/sciPad"
+                layout="@layout/keypad_scientific"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:visibility="gone" />
 
-        <LinearLayout style="@style/CalcRow">
-            <Button android:id="@+id/keyLparen" style="@style/CalcKey.Sci" android:text="(" />
-            <Button android:id="@+id/keyRparen" style="@style/CalcKey.Sci" android:text=")" />
-            <Button android:id="@+id/keySqr" style="@style/CalcKey.Sci" android:text="x²" />
-            <Button android:id="@+id/keyPow" style="@style/CalcKey.Sci" android:text="^" />
+            <include
+                android:id="@+id/numPad"
+                layout="@layout/keypad_numeric"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
-
-        <LinearLayout style="@style/CalcRow">
-            <Button android:id="@+id/keySin" style="@style/CalcKey.Sci" android:text="sin" />
-            <Button android:id="@+id/keyCos" style="@style/CalcKey.Sci" android:text="cos" />
-            <Button android:id="@+id/keyTan" style="@style/CalcKey.Sci" android:text="tan" />
-            <Button android:id="@+id/keySqrt" style="@style/CalcKey.Sci" android:text="√" />
-        </LinearLayout>
-
-        <LinearLayout style="@style/CalcRow">
-            <Button android:id="@+id/keyAsin" style="@style/CalcKey.Sci" android:text="sin⁻¹" />
-            <Button android:id="@+id/keyAcos" style="@style/CalcKey.Sci" android:text="cos⁻¹" />
-            <Button android:id="@+id/keyAtan" style="@style/CalcKey.Sci" android:text="tan⁻¹" />
-            <Button android:id="@+id/keyRecip" style="@style/CalcKey.Sci" android:text="x⁻¹" />
-        </LinearLayout>
-
-        <LinearLayout style="@style/CalcRow">
-            <Button android:id="@+id/keyLn" style="@style/CalcKey.Sci" android:text="ln" />
-            <Button android:id="@+id/keyLog" style="@style/CalcKey.Sci" android:text="log" />
-            <Button android:id="@+id/keyFact" style="@style/CalcKey.Sci" android:text="x!" />
-            <Button android:id="@+id/keyEe" style="@style/CalcKey.Sci" android:text="EE" />
-        </LinearLayout>
-
-        <LinearLayout style="@style/CalcRow">
-            <Button android:id="@+id/keyPi" style="@style/CalcKey.Sci" android:text="π" />
-            <Button android:id="@+id/keyEuler" style="@style/CalcKey.Sci" android:text="e" />
-            <Button android:id="@+id/keyAbs" style="@style/CalcKey.Sci" android:text="|x|" />
-            <Button android:id="@+id/keyComma" style="@style/CalcKey.Sci" android:text="," />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout style="@style/CalcRow">
-            <Button android:id="@+id/keyClear" style="@style/CalcKey.Clear"
-                android:text="@string/key_clear" android:contentDescription="@string/cd_clear" />
-            <Button android:id="@+id/keyDelete" style="@style/CalcKey"
-                android:text="@string/key_delete" android:contentDescription="@string/cd_delete" />
-            <Button android:id="@+id/keyPct" style="@style/CalcKey.Op"
-                android:text="@string/key_percent" />
-            <Button android:id="@+id/keyDiv" style="@style/CalcKey.Op"
-                android:text="@string/key_divide" />
-        </LinearLayout>
-
-        <LinearLayout style="@style/CalcRow">
-            <Button android:id="@+id/key7" style="@style/CalcKey" android:text="7" />
-            <Button android:id="@+id/key8" style="@style/CalcKey" android:text="8" />
-            <Button android:id="@+id/key9" style="@style/CalcKey" android:text="9" />
-            <Button android:id="@+id/keyMul" style="@style/CalcKey.Op"
-                android:text="@string/key_multiply" />
-        </LinearLayout>
-
-        <LinearLayout style="@style/CalcRow">
-            <Button android:id="@+id/key4" style="@style/CalcKey" android:text="4" />
-            <Button android:id="@+id/key5" style="@style/CalcKey" android:text="5" />
-            <Button android:id="@+id/key6" style="@style/CalcKey" android:text="6" />
-            <Button android:id="@+id/keySub" style="@style/CalcKey.Op"
-                android:text="@string/key_subtract" />
-        </LinearLayout>
-
-        <LinearLayout style="@style/CalcRow">
-            <Button android:id="@+id/key1" style="@style/CalcKey" android:text="1" />
-            <Button android:id="@+id/key2" style="@style/CalcKey" android:text="2" />
-            <Button android:id="@+id/key3" style="@style/CalcKey" android:text="3" />
-            <Button android:id="@+id/keyAdd" style="@style/CalcKey.Op"
-                android:text="@string/key_add" />
-        </LinearLayout>
-
-        <LinearLayout style="@style/CalcRow">
-            <Button android:id="@+id/keyNeg" style="@style/CalcKey"
-                android:text="@string/key_negate" />
-            <Button android:id="@+id/key0" style="@style/CalcKey" android:text="0" />
-            <Button android:id="@+id/keyDot" style="@style/CalcKey"
-                android:text="@string/key_dot" />
-            <Button android:id="@+id/keyEquals" style="@style/CalcKey.Equals"
-                android:text="@string/key_equals" />
-        </LinearLayout>
-    </LinearLayout>
-
-    </LinearLayout>
     </ScrollView>
 
 </LinearLayout>
