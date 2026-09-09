@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Landscape: display on top, scientific + numeric keypads side by side.
-     Same ids as res/layout/activity_main.xml so ActivityMainBinding stays
-     non-null across both. -->
+     Every id from res/layout/activity_main.xml is present so ActivityMainBinding
+     stays non-null across both configs. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -33,7 +34,6 @@
             style="@style/CalcChip"
             android:text="RAD" />
 
-        <!-- present for view binding; the sci pad is always shown in landscape -->
         <Button
             android:id="@+id/sciToggle"
             style="@style/CalcChip"
@@ -48,17 +48,32 @@
             android:contentDescription="@string/cd_settings" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/formula"
+    <Space
+        android:id="@+id/displaySpacer"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
+    <HorizontalScrollView
+        android:id="@+id/formulaScroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="end|center_vertical"
-        android:maxLines="1"
-        android:ellipsize="start"
-        android:textColor="@color/display_text"
-        android:textSize="30sp"
-        android:textIsSelectable="true"
-        android:fontFamily="sans-serif-light" />
+        android:fillViewport="true"
+        android:scrollbars="none"
+        android:fadingEdgeLength="20dp"
+        android:requiresFadingEdge="horizontal">
+
+        <TextView
+            android:id="@+id/formula"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="1dp"
+            android:gravity="end|center_vertical"
+            android:maxLines="1"
+            android:textColor="@color/display_text"
+            android:textSize="28sp"
+            android:textIsSelectable="true"
+            android:fontFamily="sans-serif-light" />
+    </HorizontalScrollView>
 
     <TextView
         android:id="@+id/result"
@@ -67,9 +82,9 @@
         android:gravity="end|center_vertical"
         android:maxLines="1"
         android:ellipsize="start"
-        android:minHeight="26dp"
+        android:minHeight="24dp"
         android:textColor="@color/result_text"
-        android:textSize="18sp" />
+        android:textSize="17sp" />
 
     <View
         android:layout_width="match_parent"
@@ -78,6 +93,7 @@
         android:background="@color/divider" />
 
     <LinearLayout
+        android:id="@+id/keypadArea"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"

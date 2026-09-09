@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Landscape keypad: rows share the available height by weight and buttons fill
-  their row, so nothing clips no matter how short the window is. (Portrait
-  keeps wrap-content rows inside a ScrollView — see values/styles.xml.)
--->
+<!-- Landscape: the scientific pad is always shown, so every key is a rounded
+     rectangle (never a circle), and text is a touch smaller. Row/weight
+     behaviour is inherited from values/styles.xml. -->
 <resources>
-    <style name="CalcRow">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:orientation">horizontal</item>
-    </style>
-
     <style name="CalcKey">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
         <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
         <item name="android:layout_margin">3dp</item>
         <item name="android:background">@drawable/key_background</item>
         <item name="android:textColor">@color/key_text</item>
@@ -29,9 +21,19 @@
         <item name="android:stateListAnimator">@null</item>
     </style>
 
+    <style name="CalcKey.Op">
+        <item name="android:background">@drawable/key_background_accent</item>
+        <item name="android:textColor">@color/key_text_op</item>
+    </style>
+
+    <style name="CalcKey.Equals">
+        <item name="android:background">@drawable/key_background_equals</item>
+        <item name="android:textColor">@color/key_text_equals</item>
+    </style>
+
     <style name="CalcKey.Sci">
+        <item name="android:background">@drawable/key_background</item>
         <item name="android:textColor">@color/key_text_op</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:minHeight">0dp</item>
     </style>
 </resources>

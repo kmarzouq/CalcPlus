@@ -2,7 +2,8 @@
 <resources>
     <style name="CalcRow">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:orientation">horizontal</item>
     </style>
 
@@ -20,13 +21,17 @@
         <item name="android:stateListAnimator">@null</item>
     </style>
 
+    <!-- Default = the collapsed look: circular keys. MainActivity swaps the
+         numeric keys to the rounded-rect drawables when the scientific pad
+         is expanded (like the stock calculator). -->
     <style name="CalcKey">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:minHeight">@dimen/key_min_height</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
         <item name="android:layout_margin">@dimen/key_margin</item>
-        <item name="android:background">@drawable/key_background</item>
+        <item name="android:background">@drawable/key_circle</item>
         <item name="android:textColor">@color/key_text</item>
         <item name="android:textSize">@dimen/key_text_size</item>
         <item name="android:textStyle">normal</item>
@@ -38,7 +43,7 @@
     </style>
 
     <style name="CalcKey.Op">
-        <item name="android:background">@drawable/key_background_accent</item>
+        <item name="android:background">@drawable/key_circle_accent</item>
         <item name="android:textColor">@color/key_text_op</item>
     </style>
 
@@ -46,15 +51,17 @@
         <item name="android:textColor">@color/key_text_clear</item>
     </style>
 
-    <style name="CalcKey.Sci">
-        <item name="android:textColor">@color/key_text_op</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:minHeight">46dp</item>
+    <style name="CalcKey.Equals">
+        <item name="android:background">@drawable/key_circle_equals</item>
+        <item name="android:textColor">@color/key_text_equals</item>
     </style>
 
-    <style name="CalcKey.Equals">
-        <item name="android:background">@drawable/key_background_equals</item>
-        <item name="android:textColor">@color/key_text_equals</item>
+    <!-- Scientific keys are only visible when expanded, so they are always
+         rounded rectangles. -->
+    <style name="CalcKey.Sci">
+        <item name="android:background">@drawable/key_background</item>
+        <item name="android:textColor">@color/key_text_op</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <!-- Widget keypad -->

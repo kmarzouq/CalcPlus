@@ -4,7 +4,7 @@
     <dimen name="display_result_text">22sp</dimen>
     <dimen name="key_text_size">24sp</dimen>
     <dimen name="key_min_height">56dp</dimen>
-    <dimen name="key_margin">4dp</dimen>
+    <dimen name="key_margin">3dp</dimen>
     <dimen name="screen_padding">16dp</dimen>
     <dimen name="history_text">16sp</dimen>
 </resources>

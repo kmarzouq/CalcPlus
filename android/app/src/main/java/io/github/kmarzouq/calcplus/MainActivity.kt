@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.View
@@ -22,10 +24,13 @@ class MainActivity : BaseActivity() {
     private var angle = AngleMode.RAD
     private var appliedTheme = ThemeMode.SYSTEM
     private var haptics = true
+    private var landscape = false
+    private var keysArePills = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appliedTheme = Settings.theme(this)
+        landscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         ui = ActivityMainBinding.inflate(layoutInflater)
         setContentView(ui.root)
         history = History(this)
@@ -49,15 +54,22 @@ class MainActivity : BaseActivity() {
             ui.angleToggle.text = angle.label
             render()
         }
-        ui.sciToggle.setOnClickListener { setSciVisible(ui.sciPad.root.visibility != View.VISIBLE) }
+        ui.sciToggle.setOnClickListener {
+            setSciExpanded(!Settings.sciOpen(this), animate = true)
+        }
 
-        ui.numPad.keyClear.setOnLongClickListener { doc = CalcDoc(); render(); true }
-        ui.numPad.keyDelete.setOnLongClickListener { doc = CalcDoc(); render(); true }
+        ui.numPad.keyClear.setOnLongClickListener { clearAll(); true }
+        ui.numPad.keyDelete.setOnLongClickListener { clearAll(); true }
         ui.formula.setOnLongClickListener { showEditMenu(); true }
         ui.result.setOnLongClickListener { copy(ui.result.text.toString()); true }
 
         ui.angleToggle.text = angle.label
-        applySciForConfig(resources.configuration)
+        if (landscape) {
+            ui.sciPad.root.visibility = View.VISIBLE
+            ui.sciToggle.visibility = View.GONE
+        } else {
+            setSciExpanded(Settings.sciOpen(this))
+        }
         render()
     }
 
@@ -74,6 +86,45 @@ class MainActivity : BaseActivity() {
         super.onSaveInstanceState(outState)
         outState.putString(STATE_EXPR, doc.expr)
         outState.putBoolean(STATE_EVAL, doc.evaluated)
+    }
+
+    // --- scientific pad: expand / collapse ----------------------------
+
+    /**
+     * Show or hide the scientific keys. Expanding also shrinks the number
+     * keys from circles to rounded rectangles, like the stock calculator.
+     * No-op in landscape, where the scientific keys are always shown.
+     */
+    private fun setSciExpanded(expanded: Boolean, animate: Boolean = false) {
+        if (landscape) return
+        if (animate) {
+            TransitionManager.beginDelayedTransition(
+                ui.rootLayout, AutoTransition().setDuration(180),
+            )
+        }
+        ui.sciPad.root.visibility = if (expanded) View.VISIBLE else View.GONE
+        ui.displaySpacer.visibility = if (expanded) View.GONE else View.VISIBLE
+        ui.sciToggle.alpha = if (expanded) 1f else 0.5f
+        applyKeyShape(pills = expanded)
+        Settings.setSciOpen(this, expanded)
+    }
+
+    /** Swap the number-pad key backgrounds between circle and rounded-rect. */
+    private fun applyKeyShape(pills: Boolean) {
+        if (keysArePills == pills) return
+        keysArePills = pills
+        val plain = if (pills) R.drawable.key_background else R.drawable.key_circle
+        val op = if (pills) R.drawable.key_background_accent else R.drawable.key_circle_accent
+        val eq = if (pills) R.drawable.key_background_equals else R.drawable.key_circle_equals
+        with(ui.numPad) {
+            listOf(
+                key0, key1, key2, key3, key4, key5, key6, key7, key8, key9,
+                keyDot, keyNeg, keyDelete, keyClear,
+            ).forEach { it.setBackgroundResource(plain) }
+            listOf(keyAdd, keySub, keyMul, keyDiv, keyPct)
+                .forEach { it.setBackgroundResource(op) }
+            keyEquals.setBackgroundResource(eq)
+        }
     }
 
     // --- history -------------------------------------------------------
@@ -129,29 +180,17 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun setSciVisible(visible: Boolean) {
-        ui.sciPad.root.visibility = if (visible) View.VISIBLE else View.GONE
-        ui.sciToggle.alpha = if (visible) 1f else 0.55f
-        Settings.setSciOpen(this, visible)
-    }
-
-    /** Scientific keys are always on in landscape (like the stock calculator). */
-    private fun applySciForConfig(config: Configuration) {
-        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            ui.sciPad.root.visibility = View.VISIBLE
-            ui.sciToggle.visibility = View.GONE
-        } else {
-            ui.sciToggle.visibility = View.VISIBLE
-            setSciVisible(Settings.sciOpen(this))
-        }
-    }
-
     private fun press(key: Key) {
         if (key == Key.EQUALS) {
             commit()
             return
         }
         doc = doc.press(key)
+        render()
+    }
+
+    private fun clearAll() {
+        doc = CalcDoc()
         render()
     }
 
@@ -177,6 +216,7 @@ class MainActivity : BaseActivity() {
                 else -> ""
             }
         }
+        ui.formulaScroll.post { ui.formulaScroll.fullScroll(View.FOCUS_RIGHT) }
     }
 
     // --- clipboard ----------------------------------------------------
@@ -199,7 +239,7 @@ class MainActivity : BaseActivity() {
 
     private fun paste() {
         val raw = clipboard().primaryClip?.getItemAt(0)?.coerceToText(this)?.toString().orEmpty()
-        val cleaned = raw.filter { it.isDigit() || it in "+-−×÷*/^().%" }
+        val cleaned = raw.filter { it.isDigit() || it in "+-−×÷*/^().%eE," }
         if (cleaned.isEmpty()) {
             toast(getString(R.string.nothing_to_paste)); return
         }
