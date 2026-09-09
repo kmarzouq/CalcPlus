@@ -1,7 +1,7 @@
 {
-  "_comment": "Obtainium app import config. Replace REPO with the repository name, then share this file or the equivalent obtainium:// link. Obtainium -> Add App -> Import from JSON.",
+  "_comment": "Obtainium app import config. Obtainium -> Add App -> paste the URL, or import this JSON.",
   "id": "io.github.kmarzouq.calcplus",
-  "url": "https://github.com/kmarzouq/REPO",
+  "url": "https://github.com/kmarzouq/CalcPlus",
   "author": "kmarzouq",
   "name": "CalcPlus",
   "preferredApkIndex": 0,
