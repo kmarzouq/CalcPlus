@@ -1,7 +1,7 @@
 # CalcPlus
 
-A tiny, permission-free calculator for Android — built for GrapheneOS and
-Accrescent, distributed via Obtainium for now.
+A tiny, permission-free calculator for Android — built for GrapheneOS,
+distributed via Obtainium.
 
 - **No permissions.** The manifest declares none. Not `INTERNET`, nothing.
 - **Small.** One Rust `.so` (~435 KB, arm64 only), no Compose, no AppCompat,
@@ -64,7 +64,7 @@ Accrescent, distributed via Obtainium for now.
 ```
 core/                 Cargo workspace
   calc-core/           lexer · Pratt parser · decimal evaluator + programmer
-                       (fixed-width integer) engine, all no_std
+                       (fixed-width int / float) engine, all no_std
   calc-ffi/            JNI bridge -> libcalc.so
 android/
   app/                 Kotlin: MainActivity, SettingsActivity, HistoryActivity,
@@ -89,7 +89,8 @@ wrapping semantics, masked to the word size after every step, so it wraps
 exactly as a hardware register would. Float arithmetic runs in `f64`, then the
 result is rounded (ties to even) to the nearest value representable by the
 chosen `sign` / `exponent` / `mantissa` layout — `f32` / `f64` use the native
-conversion, anything else a generic minifloat encoder.
+conversion, anything else a generic minifloat encoder. Subnormals, `±∞` and
+`NaN` are handled; `inf` / `nan` are also accepted as literals.
 
 ## Building
 
@@ -104,7 +105,6 @@ cd core && cargo test
 # App (Gradle drives cargo-ndk automatically via the :app:cargoNdkBuild task)
 cd ../android
 ./gradlew :app:assembleRelease      # -> app/build/outputs/apk/release/
-./gradlew :app:bundleRelease        # -> .aab for Accrescent later
 ```
 
 ### Release signing
@@ -143,16 +143,9 @@ Without it, `assembleRelease` produces an **unsigned** APK (CI signs it).
 
 ## Distribution
 
-### Obtainium (now)
-
 Point Obtainium at this repo's GitHub Releases. Config: [`obtainium.json`](obtainium.json).
 Releases are built and signed by [`.github/workflows/release.yml`](.github/workflows/release.yml)
 on a `v*` tag.
-
-### Accrescent (later)
-
-`bundleRelease` already emits a split-APK-capable `.aab`. Remaining work:
-register as a developer, wire up reproducible builds, submit.
 
 ## Lock-screen widget notes
 
@@ -168,7 +161,7 @@ register as a developer, wire up reproducible builds, submit.
 ## App ID
 
 `io.github.kmarzouq.calcplus` — the permanent package identity (reverse-DNS of
-the GitHub namespace, Accrescent-acceptable). The display name is `CalcPlus`
+the GitHub namespace). The display name is `CalcPlus`
 (`app_name` string). Debug builds get a `.debug` suffix so both can be
 installed side by side.
 
