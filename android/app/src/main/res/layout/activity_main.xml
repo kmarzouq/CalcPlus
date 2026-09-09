@@ -27,6 +27,12 @@
             android:layout_weight="1" />
 
         <ImageButton
+            android:id="@+id/graphButton"
+            style="@style/ToolbarIcon"
+            android:src="@drawable/ic_function"
+            android:contentDescription="@string/cd_graph" />
+
+        <ImageButton
             android:id="@+id/settingsButton"
             style="@style/ToolbarIcon"
             android:src="@drawable/ic_settings"

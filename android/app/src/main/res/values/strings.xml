@@ -20,6 +20,15 @@
     <string name="cd_sci">Scientific keypad</string>
     <string name="cd_history">History</string>
     <string name="cd_settings">Settings</string>
+    <string name="cd_graph">Graph</string>
+
+    <string name="graph_title">Graph</string>
+    <string name="graph_reset">Reset view</string>
+    <string name="graph_remove">Remove</string>
+    <string name="graph_y_equals">y =</string>
+    <string name="graph_hint">e.g. sin(x), x^2, 2x-1</string>
+    <string name="graph_add">＋  Add function</string>
+    <string name="graph_window">x: [%1$s, %2$s]   y: [%3$s, %4$s]   ·   drag to pan, pinch to zoom, tap to trace</string>
     <string name="cd_back">Back</string>
     <string name="cd_open_app">Open Calculator</string>
 

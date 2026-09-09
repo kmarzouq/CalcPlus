@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/window_bg"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/AppBar">
+        <ImageButton
+            android:id="@+id/back"
+            style="@style/AppBarIcon"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="@string/cd_back" />
+        <TextView
+            style="@style/AppBarTitle"
+            android:text="@string/graph_title" />
+        <Button
+            android:id="@+id/angleToggle"
+            style="@style/CalcChip"
+            android:text="RAD" />
+        <ImageButton
+            android:id="@+id/resetView"
+            style="@style/AppBarIcon"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_refresh"
+            android:contentDescription="@string/graph_reset" />
+    </LinearLayout>
+
+    <io.github.kmarzouq.calcplus.GraphView
+        android:id="@+id/graph"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/window_bg"
+        android:elevation="8dp"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/divider" />
+
+        <LinearLayout
+            android:id="@+id/functionList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/addFunction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:minHeight="40dp"
+            android:gravity="center_vertical"
+            android:drawablePadding="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="@string/graph_add"
+            android:textColor="@color/key_text_op"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/windowText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/result_text"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -14,6 +14,8 @@
 extern crate alloc;
 
 use alloc::string::String;
+use alloc::vec::Vec;
+use rust_decimal::prelude::{FromPrimitive, ToPrimitive};
 
 pub mod ast;
 pub mod error;
@@ -45,6 +47,42 @@ pub fn evaluate_to_string(
         .with_angle(angle)
         .evaluate(input)
         .map(|value| format::render(value, opts))
+}
+
+/// Sample `input` — a function of the variable `x` — at `n` evenly spaced
+/// points across `[x_min, x_max]`.
+///
+/// Points where the function is undefined, complex, or non-finite come back as
+/// [`f64::NAN`] (the graph draws a gap there). The only hard error is a
+/// malformed expression.
+pub fn sample(
+    input: &str,
+    x_min: f64,
+    x_max: f64,
+    n: usize,
+    angle: AngleMode,
+) -> Result<Vec<f64>, CalcError> {
+    let expr = parser::parse(input)?;
+    let mut ctx = Context::new().with_angle(angle);
+    let mut ys = Vec::with_capacity(n);
+    let span = x_max - x_min;
+    for i in 0..n {
+        let t = if n > 1 {
+            i as f64 / (n - 1) as f64
+        } else {
+            0.0
+        };
+        let x = x_min + span * t;
+        ctx.set_var("x", Decimal::from_f64(x).unwrap_or(Decimal::ZERO));
+        let y = ctx
+            .eval_ast(&expr)
+            .ok()
+            .and_then(|d| d.to_f64())
+            .filter(|v| v.is_finite())
+            .unwrap_or(f64::NAN);
+        ys.push(y);
+    }
+    Ok(ys)
 }
 
 #[cfg(test)]
@@ -109,6 +147,26 @@ mod tests {
             "0.333333333333"
         );
         assert_eq!(evaluate_to_string("2 / 4", &opts, r).unwrap(), "0.5");
+    }
+
+    #[test]
+    fn sampling_a_function() {
+        // y = x^2 on [-2, 2], 5 points -> 4, 1, 0, 1, 4
+        let ys = sample("x^2", -2.0, 2.0, 5, AngleMode::Radians).unwrap();
+        assert_eq!(ys, vec![4.0, 1.0, 0.0, 1.0, 4.0]);
+
+        // implicit multiplication works: 2x
+        let ys = sample("2x", 0.0, 4.0, 5, AngleMode::Radians).unwrap();
+        assert_eq!(ys, vec![0.0, 2.0, 4.0, 6.0, 8.0]);
+
+        // undefined points -> NaN, not an error
+        let ys = sample("1/x", -1.0, 1.0, 3, AngleMode::Radians).unwrap();
+        assert_eq!(ys[0], -1.0);
+        assert!(ys[1].is_nan()); // 1/0
+        assert_eq!(ys[2], 1.0);
+
+        // a bad expression is the only hard error
+        assert!(sample("x +", 0.0, 1.0, 2, AngleMode::Radians).is_err());
     }
 
     #[test]

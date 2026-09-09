@@ -41,9 +41,15 @@
             android:text="@string/sci_toggle" />
 
         <ImageButton
-            android:id="@+id/settingsButton"
+            android:id="@+id/graphButton"
             style="@style/ToolbarIcon"
             android:layout_marginStart="8dp"
+            android:src="@drawable/ic_function"
+            android:contentDescription="@string/cd_graph" />
+
+        <ImageButton
+            android:id="@+id/settingsButton"
+            style="@style/ToolbarIcon"
             android:src="@drawable/ic_settings"
             android:contentDescription="@string/cd_settings" />
     </LinearLayout>

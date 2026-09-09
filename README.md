@@ -5,7 +5,7 @@ Accrescent, distributed via Obtainium for now.
 
 - **No permissions.** The manifest declares none. Not `INTERNET`, nothing.
 - **Small.** One Rust `.so` (~385 KB, arm64 only), no Compose, no AppCompat,
-  no Material library. Release APK ≈ **460 KB**.
+  no Material library. Release APK ≈ **500 KB**.
 - **Rust core, Kotlin shell.** All arithmetic lives in `calc-core` (Rust,
   `no_std`); Kotlin does UI and the widget.
 - **Interactive lock-screen widget.** Every key is a broadcast, so the keypad
@@ -17,6 +17,8 @@ Accrescent, distributed via Obtainium for now.
   haptics, a **Light / Dark / System** theme, and a landscape layout with both
   keypads side by side. Rotates cleanly; the expression survives the rotation.
   See [FEATURES.md](FEATURES.md) for a point-by-point comparison.
+- **Graphing.** `y = f(x)` plots for up to four functions at once — drag to
+  pan, pinch to zoom, tap to trace. The same Rust engine samples the curves.
 
 ## Screenshots
 
@@ -31,12 +33,14 @@ Accrescent, distributed via Obtainium for now.
   <img src="docs/screenshots/dark.png" width="31%" alt="Dark theme with the scientific keypad open">
   &nbsp;
   <img src="docs/screenshots/settings.png" width="31%" alt="Settings: theme, keypress haptics, clear history">
+  &nbsp;
+  <img src="docs/screenshots/graph.png" width="31%" alt="Graphing two functions with a square grid and trace">
 </p>
 <p align="center">
   <img src="docs/screenshots/landscape.png" width="64%" alt="Landscape: scientific and numeric keypads side by side">
 </p>
 
-## Status — Phases 0–3 done
+## Status — Phases 0–3 done, Phase 4 underway
 
 | Phase | Scope | State |
 |------:|-------|-------|
@@ -44,7 +48,7 @@ Accrescent, distributed via Obtainium for now.
 | 1 | Decimal calculator: `+ − × ÷ ^ %`, parens, `±`, history | ✅ |
 | 2 | Interactive home/lock-screen widget, responsive sizes | ✅ |
 | 3 | Scientific: trig + inverses, hyperbolics, logs, roots, `nCr`/`gcd`, DEG/RAD/GRAD | ✅ |
-| 4 | TI-84 graphing (subset) | later |
+| 4 | TI-84 graphing (subset) | 🔨 plotting, pan/zoom, trace done; table/intersections next |
 | 5 | Programmer calculator (bases, bitwise, word sizes) | later |
 
 ## Layout
@@ -55,7 +59,8 @@ core/                 Cargo workspace
   calc-ffi/            JNI bridge -> libcalc.so
 android/
   app/                 Kotlin: MainActivity, SettingsActivity, HistoryActivity,
-                       widget/, CalcDoc (pure input model), CalcEngine (JNI wrapper)
+                       GraphActivity, GraphView, widget/, CalcDoc (pure input
+                       model), CalcEngine (JNI wrapper)
 ```
 
 Theme switching is done without AppCompat — `BaseActivity` overrides the night
@@ -65,7 +70,9 @@ permission-free.
 
 The engine is `Decimal` (base-10, 28–29 significant digits) — the same kind of
 arithmetic a TI-84 does, so `0.1 + 0.2 == 0.3`. It is *not* a CAS: `1/3`
-displays as `0.333333333333`, not as a fraction.
+displays as `0.333333333333`, not as a fraction. Graphing samples each curve
+through the engine (`calc_core::sample`), so plotted functions accept the same
+syntax as the calculator, including implicit multiplication (`2x`, `3(x+1)`).
 
 ## Building
 

@@ -4,11 +4,15 @@
 //! Binding powers (left, right):
 //! ```text
 //!   + -            10 / 11      left-associative
-//!   * /            20 / 21      left-associative
+//!   * / (implicit) 20 / 21      left-associative
 //!   ^              30 / 29      right-associative
 //!   prefix - +     ..15         so  -2^2 == -(2^2),  2^-2 == 2^(-2)
 //!   postfix ! %    40           binds tighter than everything
 //! ```
+//!
+//! Implicit multiplication: a value directly followed by a name or `(` —
+//! `2x`, `2pi`, `3(x+1)`, `(a)(b)`, `x sin(x)` — is read as `*` at Mul
+//! precedence. Two bare numbers (`1 2`) is still a syntax error.
 
 use crate::ast::{BinOp, Expr};
 use crate::error::CalcError;
@@ -72,6 +76,21 @@ impl Parser {
                     Some(Tok::Bang) => Expr::Factorial(Box::new(lhs)),
                     Some(Tok::Percent) => Expr::Percent(Box::new(lhs)),
                     _ => unreachable!("postfix_bp only matches ! and %"),
+                };
+                continue;
+            }
+
+            // Implicit multiplication: `2x`, `3(x+1)`, `x sin(x)`, `(a)(b)`.
+            if matches!(tok.tok, Tok::Ident(_) | Tok::LParen) {
+                const IMPLICIT_LBP: u8 = 20;
+                if IMPLICIT_LBP < min_bp {
+                    break;
+                }
+                let rhs = self.expr(IMPLICIT_LBP + 1)?;
+                lhs = Expr::Binary {
+                    op: BinOp::Mul,
+                    lhs: Box::new(lhs),
+                    rhs: Box::new(rhs),
                 };
                 continue;
             }
@@ -256,5 +275,37 @@ mod tests {
     fn unbalanced_parens() {
         assert!(matches!(parse("(1 + 2"), Err(CalcError::UnexpectedEnd)));
         assert!(matches!(parse("1 + 2)"), Err(CalcError::Syntax { pos: 5 })));
+    }
+
+    #[test]
+    fn implicit_multiplication() {
+        // 2x  ->  Mul(2, x)
+        assert_eq!(
+            p("2x"),
+            Expr::Binary {
+                op: BinOp::Mul,
+                lhs: Box::new(Expr::Num(dec!(2))),
+                rhs: Box::new(Expr::Name("x".into())),
+            }
+        );
+        // 2x^2  ->  Mul(2, Pow(x, 2))   (implicit `*` looser than `^`)
+        assert_eq!(
+            p("2x^2"),
+            Expr::Binary {
+                op: BinOp::Mul,
+                lhs: Box::new(Expr::Num(dec!(2))),
+                rhs: Box::new(Expr::Binary {
+                    op: BinOp::Pow,
+                    lhs: Box::new(Expr::Name("x".into())),
+                    rhs: Box::new(Expr::Num(dec!(2))),
+                }),
+            }
+        );
+        // still an error for two bare numbers
+        assert!(matches!(parse("1 2"), Err(CalcError::Syntax { .. })));
+        // 3(x+1) and (a)(b) parse
+        assert!(parse("3(x+1)").is_ok());
+        assert!(parse("(2)(3)").is_ok());
+        assert!(parse("x sin(x)").is_ok());
     }
 }

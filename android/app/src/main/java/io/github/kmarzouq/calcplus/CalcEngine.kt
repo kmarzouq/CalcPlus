@@ -75,6 +75,28 @@ object CalcEngine {
         }
     }
 
+    /**
+     * Sample `y = f(x)` for graphing. Returns [n] y-values across `[xMin, xMax]`
+     * (`NaN` = undefined there), or an **empty** array if [expression] is
+     * malformed / the engine is unavailable.
+     */
+    fun sample(
+        expression: String,
+        xMin: Double,
+        xMax: Double,
+        n: Int,
+        angle: AngleMode = AngleMode.RAD,
+    ): DoubleArray {
+        if (!NativeBridge.available) return DoubleArray(0)
+        val ascii = normalize(expression)
+        if (ascii.isBlank()) return DoubleArray(0)
+        return try {
+            NativeBridge.nativeSample(ascii, xMin, xMax, n, angle.code)
+        } catch (_: RuntimeException) {
+            DoubleArray(0)
+        }
+    }
+
     /** Map the pretty display form to plain ASCII the engine can lex. */
     fun normalize(display: String): String = buildString(display.length) {
         val src = display

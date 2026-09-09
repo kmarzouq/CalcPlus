@@ -45,6 +45,9 @@ class MainActivity : BaseActivity() {
         wireScientific()
 
         ui.historyButton.setOnClickListener { openHistory() }
+        ui.graphButton.setOnClickListener {
+            startActivity(Intent(this, GraphActivity::class.java))
+        }
         ui.settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }

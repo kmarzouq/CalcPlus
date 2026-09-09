@@ -67,6 +67,12 @@ impl Context {
         self.eval(&expr)
     }
 
+    /// Evaluate an already-parsed expression — for repeated evaluation with
+    /// different variable bindings, e.g. sampling a function for a graph.
+    pub fn eval_ast(&self, expr: &Expr) -> Result<Decimal, CalcError> {
+        self.eval(expr)
+    }
+
     fn eval(&self, e: &Expr) -> Result<Decimal, CalcError> {
         match e {
             Expr::Num(d) => Ok(*d),

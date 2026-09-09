@@ -23,4 +23,9 @@
     <color name="widget_key_op_text">#0B57D0</color>
     <color name="widget_key_eq_text">#FFFFFF</color>
     <color name="widget_key_clear_text">#B3261E</color>
+
+    <color name="graph_grid">#22000000</color>
+    <color name="graph_axis">#8A000000</color>
+    <color name="graph_label">#8A000000</color>
+    <color name="graph_trace_bg">#F0FFFFFF</color>
 </resources>

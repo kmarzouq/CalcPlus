@@ -41,6 +41,13 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".MainActivity" />
 
+        <activity
+            android:name=".GraphActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".MainActivity" />
+
         <!-- Interactive calculator widget. Works on the home screen and, on
              Android 16 QPR2+ / GrapheneOS, the lock screen widget page. -->
         <receiver

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="2dp">
+
+    <View
+        android:id="@+id/colorDot"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/graph_dot" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/graph_y_equals"
+        android:textColor="@color/result_text"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/exprInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="6dp"
+        android:background="@null"
+        android:hint="@string/graph_hint"
+        android:inputType="textVisiblePassword"
+        android:imeOptions="actionDone"
+        android:maxLines="1"
+        android:textColor="@color/display_text"
+        android:textSize="16sp" />
+
+    <ImageButton
+        android:id="@+id/removeRow"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_close"
+        android:contentDescription="@string/graph_remove" />
+</LinearLayout>

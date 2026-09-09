@@ -44,10 +44,23 @@ object Settings {
         prefs(ctx).edit().putBoolean(KEY_HAPTICS, on).apply()
     }
 
+    // --- grapher --------------------------------------------------------
+
+    fun graphFunctions(ctx: Context): List<String> =
+        prefs(ctx).getString(KEY_GRAPH, "").orEmpty()
+            .split('\n').filter { it.isNotBlank() }
+
+    fun setGraphFunctions(ctx: Context, exprs: List<String>) {
+        prefs(ctx).edit()
+            .putString(KEY_GRAPH, exprs.joinToString("\n") { it.replace('\n', ' ') })
+            .apply()
+    }
+
     const val KEY_THEME = "theme_mode"
     const val KEY_ANGLE = "angle_mode"
     const val KEY_SCI = "sci_open"
     const val KEY_HAPTICS = "haptics"
+    const val KEY_GRAPH = "graph_functions"
 }
 
 /** Light / dark selection, applied per-app (no system-wide change). */
