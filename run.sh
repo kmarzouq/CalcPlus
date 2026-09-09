@@ -119,22 +119,27 @@ if [ -z "$TARGET" ]; then
 
   # --- wait for boot, with a real timeout ---
   deadline=$(( $(date +%s) + BOOT_TIMEOUT ))
+  emu_alive() { pgrep -f 'qemu-system-x86_64' >/dev/null 2>&1 ||
+                pgrep -f "emulator .*-avd $AVD" >/dev/null 2>&1 ||
+                pgrep -f "emulator64-" >/dev/null 2>&1; }
+  grace=$(( $(date +%s) + 30 ))   # don't cry "it died" during the first 30s of startup
   printf '   booting'
   while :; do
     e="$(any_emulator || true)"
     if [ -n "$e" ] && [ "$("$ADB" -s "$e" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; then
       TARGET="$e"; break
     fi
-    if ! pgrep -f 'qemu-system-x86_64' >/dev/null 2>&1 && [ -z "$e" ]; then
+    if [ "$(date +%s)" -gt "$grace" ] && [ -z "$e" ] && ! emu_alive; then
       printf '\n'
       warn "The emulator process exited. Last lines of $EMU_LOG:"
-      tail -n 20 "$EMU_LOG" >&2
-      die "Emulator failed to start. Common fixes: 'wsl --shutdown' for KVM, or set CALCPLUS_GPU=swiftshader_indirect, or run with --headless."
+      tail -n 25 "$EMU_LOG" >&2
+      die "Emulator failed to start. Try:  ./run.sh --headless   (windowed needs WSLg),
+  or 'wsl --shutdown' from Windows for KVM, or CALCPLUS_GPU=swiftshader_indirect."
     fi
     if [ "$(date +%s)" -ge "$deadline" ]; then
       printf '\n'
       warn "Timed out after ${BOOT_TIMEOUT}s. Last lines of $EMU_LOG:"
-      tail -n 20 "$EMU_LOG" >&2
+      tail -n 25 "$EMU_LOG" >&2
       die "Emulator did not finish booting. Try 'wsl --shutdown', or raise CALCPLUS_BOOT_TIMEOUT."
     fi
     printf .; sleep 3
