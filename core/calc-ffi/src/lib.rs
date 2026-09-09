@@ -13,7 +13,7 @@
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::ptr;
 
-use calc_core::{evaluate_to_string, programmer, AngleMode, FormatOptions, Width};
+use calc_core::{evaluate_to_string, programmer, AngleMode, FormatOptions, NumFormat};
 use jni::objects::{JClass, JString};
 use jni::sys::{jchar, jdouble, jdoubleArray, jint, jlong, jstring};
 use jni::JNIEnv;
@@ -114,21 +114,27 @@ pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeSampl
     }
 }
 
-/// `NativeBridge.nativeProgEval(expr, width)` — evaluate a programmer-calculator
-/// integer expression. `width`: `0` = 8-bit, `1` = 16, `2` = 32, anything else
-/// = 64. Returns the result's bit pattern as a `long` (reinterpret it as
-/// unsigned for display). Throws `java.lang.ArithmeticException` on any error.
+/// `NativeBridge.nativeProgEval(expr, mode, p1, p2, p3)` — evaluate a
+/// programmer-calculator expression under a number format. `mode`: `0` = signed
+/// int, `1` = unsigned int, `2` = float. For int, `p1` is the width code
+/// (`0`=8, `1`=16, `2`=32, else 64). For float, `p1`/`p2`/`p3` are the sign /
+/// exponent / mantissa bit counts. Returns the result's raw bit pattern as a
+/// `long`. Throws `java.lang.ArithmeticException` on any error.
 #[no_mangle]
 pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeProgEval<'l>(
     mut env: JNIEnv<'l>,
     _class: JClass<'l>,
     expr: JString<'l>,
-    width: jint,
+    mode: jint,
+    p1: jint,
+    p2: jint,
+    p3: jint,
 ) -> jlong {
     let outcome = catch_unwind(AssertUnwindSafe(
         || -> Result<Option<u64>, jni::errors::Error> {
             let input: String = env.get_string(&expr)?.into();
-            match programmer::evaluate(&input, Width::from_code(width)) {
+            let fmt = NumFormat::from_wire(mode, p1, p2, p3);
+            match programmer::evaluate_fmt(&input, fmt) {
                 Ok(v) => Ok(Some(v)),
                 Err(e) => {
                     env.throw_new("java/lang/ArithmeticException", e.to_string())?;
@@ -148,6 +154,36 @@ pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeProgE
         Err(_) => {
             let _ = env.throw_new("java/lang/RuntimeException", "calc engine panicked");
             0
+        }
+    }
+}
+
+/// `NativeBridge.nativeProgFormat(bits, mode, p1, p2, p3)` — render a raw bit
+/// pattern as its human value string (signed/unsigned decimal, or the float's
+/// decimal value). Same `mode`/`p*` encoding as `nativeProgEval`.
+#[no_mangle]
+pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeProgFormat<'l>(
+    mut env: JNIEnv<'l>,
+    _class: JClass<'l>,
+    bits: jlong,
+    mode: jint,
+    p1: jint,
+    p2: jint,
+    p3: jint,
+) -> jstring {
+    let outcome = catch_unwind(AssertUnwindSafe(|| {
+        let fmt = NumFormat::from_wire(mode, p1, p2, p3);
+        programmer::format_value(bits as u64, fmt)
+    }));
+
+    match outcome {
+        Ok(s) => env
+            .new_string(s)
+            .map(JString::into_raw)
+            .unwrap_or(ptr::null_mut()),
+        Err(_) => {
+            let _ = env.throw_new("java/lang/RuntimeException", "calc engine panicked");
+            ptr::null_mut()
         }
     }
 }

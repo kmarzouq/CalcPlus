@@ -71,11 +71,11 @@ object Settings {
         prefs(ctx).edit().putString(KEY_PROG_RADIX, radix.name).apply()
     }
 
-    fun progWord(ctx: Context): WordSize =
-        WordSize.fromName(prefs(ctx).getString(KEY_PROG_WORD, null))
+    fun progFormat(ctx: Context): NumFormat =
+        NumFormat.parse(prefs(ctx).getString(KEY_PROG_FMT, null))
 
-    fun setProgWord(ctx: Context, word: WordSize) {
-        prefs(ctx).edit().putString(KEY_PROG_WORD, word.name).apply()
+    fun setProgFormat(ctx: Context, fmt: NumFormat) {
+        prefs(ctx).edit().putString(KEY_PROG_FMT, fmt.serialize()).apply()
     }
 
     const val KEY_THEME = "theme_mode"
@@ -85,7 +85,7 @@ object Settings {
     const val KEY_GRAPH = "graph_functions"
     const val KEY_PROG = "prog_tokens"
     const val KEY_PROG_RADIX = "prog_radix"
-    const val KEY_PROG_WORD = "prog_word"
+    const val KEY_PROG_FMT = "prog_format"
 }
 
 /** Light / dark selection, applied per-app (no system-wide change). */

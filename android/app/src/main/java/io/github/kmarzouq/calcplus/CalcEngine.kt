@@ -98,14 +98,14 @@ object CalcEngine {
     }
 
     /**
-     * Evaluate a programmer-calculator integer expression ([engineInput] is
-     * already ASCII with base prefixes). [width]: 0=8, 1=16, 2=32, 3=64 bits.
+     * Evaluate a programmer-calculator expression ([engineInput] is already
+     * ASCII) under [fmt].
      */
-    fun programmer(engineInput: String, width: Int): ProgOutcome {
+    fun programmer(engineInput: String, fmt: NumFormat): ProgOutcome {
         if (!NativeBridge.available) return ProgOutcome.Error("Engine unavailable")
         if (engineInput.isBlank()) return ProgOutcome.Pending
         return try {
-            ProgOutcome.Value(NativeBridge.nativeProgEval(engineInput, width))
+            ProgOutcome.Value(NativeBridge.nativeProgEval(engineInput, fmt.mode, fmt.p1, fmt.p2, fmt.p3))
         } catch (e: ArithmeticException) {
             val m = e.message.orEmpty()
             ProgOutcome.Error(
@@ -113,12 +113,24 @@ object CalcEngine {
                     m.contains("divi", ignoreCase = true) -> "Can't divide by zero"
                     m.contains("end") || m.contains("empty") -> "Incomplete"
                     m.contains("large") -> "Number too large"
+                    m.contains("whole number") -> "Not a whole number"
+                    m.contains("bitwise") -> "No bitwise ops in float mode"
                     m.contains("unknown", ignoreCase = true) -> "Unknown operator"
                     else -> "Error"
                 },
             )
         } catch (_: RuntimeException) {
             ProgOutcome.Error("Error")
+        }
+    }
+
+    /** Render a raw programmer-calculator bit pattern as its value string. */
+    fun programmerFormat(bits: Long, fmt: NumFormat): String {
+        if (!NativeBridge.available) return ""
+        return try {
+            NativeBridge.nativeProgFormat(bits, fmt.mode, fmt.p1, fmt.p2, fmt.p3)
+        } catch (_: RuntimeException) {
+            ""
         }
     }
 

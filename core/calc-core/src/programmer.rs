@@ -1,32 +1,37 @@
 // SPDX-License-Identifier: GPL-2.0-only
-//! Fixed-width integer expression engine for the programmer calculator.
+//! Expression engine for the programmer calculator.
 //!
-//! Values are two's-complement bit patterns of a chosen [`Width`] (8/16/32/64).
-//! Arithmetic runs in `u128` with wrapping semantics and is masked back to the
-//! width after every step, so every operation wraps exactly as it would in a
-//! hardware register. `/` and `%` interpret their operands as **signed** for
-//! that width.
+//! A [`NumFormat`] chooses how numbers are interpreted:
+//! * **signed int** — two's-complement, wraps to the [`Width`]
+//! * **unsigned int** — same bit-twiddling, unsigned `/` `%` and display
+//! * **float** — ordinary `f64` arithmetic, then rounded (ties to even) to the
+//!   nearest value of an IEEE-style `sign` / `exp` / `mant` layout. Standard
+//!   `f32` and `f64` layouts use the native conversion; anything else runs a
+//!   generic minifloat encoder.
+//!
+//! Integer arithmetic runs in `u128` with wrapping semantics, masked to the
+//! width after every step, so it wraps exactly as a hardware register would.
 //!
 //! Grammar (lowest precedence first), C-flavoured:
 //! ```text
-//!   or  nor            |        keyword: or  nor
-//!   xor xnor           ^        keyword: xor xnor
-//!   and nand           &        keyword: and nand
-//!   shift / rotate     << >>    keyword: shl shr rol ror
+//!   or  nor            |        keyword: or  nor       (int only)
+//!   xor xnor           ^        keyword: xor xnor      (int only)
+//!   and nand           &        keyword: and nand      (int only)
+//!   shift / rotate     << >>    keyword: shl shr rol ror  (int only)
 //!   add / sub          + -
 //!   mul / div / rem    * / %    keyword: mod
-//!   prefix             - ~      keyword: not
+//!   prefix             - ~      keyword: not  (~/not int only)
 //!   atom               literal | ( expr )
 //! ```
-//! Literals: decimal `42`, hex `0x2A`, octal `0o52`, binary `0b101010`, with
-//! `_` group separators allowed. A leading `-` is the prefix operator.
+//! Literals: decimal `42` / `1.5` / `6.02e23`, hex `0x2A`, octal `0o52`,
+//! binary `0b101010`, with `_` separators. A leading `-` is the prefix operator.
 
 use crate::error::CalcError;
 use alloc::boxed::Box;
-use alloc::string::String;
+use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 
-/// Register width for the programmer calculator.
+/// Register width for integer modes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Width {
     W8,
@@ -65,29 +70,124 @@ impl Width {
     }
 }
 
-/// Evaluate `input` as a fixed-width integer expression.
+/// How the programmer calculator interprets its numbers.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum NumFormat {
+    /// Two's-complement (signed) or plain unsigned integer of a fixed width.
+    Int { width: Width, signed: bool },
+    /// IEEE-754-style float with `sign` (0 or 1), `exp` and `mant` bit fields.
+    /// `sign + exp + mant` never exceeds 64. Bias is `2^(exp-1) - 1`.
+    Float { sign: u32, exp: u32, mant: u32 },
+}
+
+impl NumFormat {
+    /// Decode the FFI wire form. `mode`: 0 = signed int, 1 = unsigned int,
+    /// 2 = float. For int, `p1` is the [`Width`] code. For float, `p1` is the
+    /// sign-bit count, `p2` the exponent width, `p3` the mantissa width.
+    #[must_use]
+    pub fn from_wire(mode: i32, p1: i32, p2: i32, p3: i32) -> Self {
+        match mode {
+            2 => {
+                let sign = p1.clamp(0, 1) as u32;
+                let exp = p2.clamp(2, 30) as u32;
+                let head = sign + exp;
+                let mant = (p3.max(1) as u32)
+                    .min(52)
+                    .min(64u32.saturating_sub(head).max(1));
+                Self::Float { sign, exp, mant }
+            }
+            m => Self::Int {
+                width: Width::from_code(p1),
+                signed: m == 0,
+            },
+        }
+    }
+
+    fn total_bits(self) -> u32 {
+        match self {
+            Self::Int { width, .. } => width.bits(),
+            Self::Float { sign, exp, mant } => sign + exp + mant,
+        }
+    }
+
+    fn mask(self) -> u64 {
+        match self.total_bits() {
+            64 => u64::MAX,
+            b => (1u64 << b) - 1,
+        }
+    }
+}
+
+/// Evaluate `input` as a signed fixed-width integer expression (compat shim).
 ///
-/// Returns the result's bit pattern (already masked to `width`). Never panics;
-/// every failure is a [`CalcError`].
+/// Returns the result's bit pattern, masked to `width`. Never panics.
 pub fn evaluate(input: &str, width: Width) -> Result<u64, CalcError> {
+    evaluate_fmt(
+        input,
+        NumFormat::Int {
+            width,
+            signed: true,
+        },
+    )
+}
+
+/// Evaluate `input` under `fmt`, returning the result's raw bit pattern.
+///
+/// Integer modes wrap to the width; float mode rounds the `f64` result to the
+/// nearest value representable in the chosen layout. Never panics.
+pub fn evaluate_fmt(input: &str, fmt: NumFormat) -> Result<u64, CalcError> {
     let toks = lex(input)?;
     if toks.is_empty() {
         return Err(CalcError::UnexpectedEnd);
     }
     let mut p = Parser { toks, i: 0 };
-    let expr = p.expr(0)?;
+    let node = p.expr(0)?;
     if let Some(tok) = p.toks.get(p.i) {
         return Err(CalcError::Syntax { pos: tok.1 });
     }
-    let value = eval(&expr, width)?;
-    Ok((value & width.mask()) as u64)
+    match fmt {
+        NumFormat::Int { width, signed } => {
+            let value = eval_int(&node, width, signed)?;
+            Ok((value & width.mask()) as u64)
+        }
+        NumFormat::Float { sign, exp, mant } => {
+            let value = eval_float(&node)?;
+            Ok(float_encode(value, sign, exp, mant))
+        }
+    }
+}
+
+/// Render `bits` as a human value string for the given `fmt` — a signed or
+/// unsigned decimal, or the float's decimal value (`3.14159`, `-∞`, `NaN`).
+#[must_use]
+pub fn format_value(bits: u64, fmt: NumFormat) -> String {
+    let bits = bits & fmt.mask();
+    match fmt {
+        NumFormat::Int { width, signed } => {
+            if signed {
+                to_signed(u128::from(bits), width).to_string()
+            } else {
+                bits.to_string()
+            }
+        }
+        NumFormat::Float { sign, exp, mant } => {
+            format_f64(float_decode(bits, sign, exp, mant), mant)
+        }
+    }
 }
 
 // --- lexer -------------------------------------------------------------------
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+/// A numeric literal — an exact integer, or a float if it had a `.` / exponent.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum LitVal {
+    I(u128),
+    F(f64),
+}
+
+#[derive(Debug, Clone, PartialEq)]
 enum Tok {
-    Int(u128),
+    Num(LitVal),
     Plus,
     Minus,
     Star,
@@ -165,10 +265,14 @@ fn lex(src: &str) -> Result<Vec<(Tok, usize)>, CalcError> {
                     _ => return Err(CalcError::BadChar { pos, ch }),
                 }
             }
-            '0'..='9' => Tok::Int(lex_number(&mut chars)?),
+            '0'..='9' | '.' => Tok::Num(lex_number(&mut chars)?),
             c if c.is_ascii_alphabetic() || c == '_' => {
                 let word = lex_word(&mut chars);
-                Tok::Kw(keyword(&word)?)
+                match word.as_str() {
+                    "inf" | "infinity" => Tok::Num(LitVal::F(f64::INFINITY)),
+                    "nan" => Tok::Num(LitVal::F(f64::NAN)),
+                    _ => Tok::Kw(keyword(&word)?),
+                }
             }
             _ => return Err(CalcError::BadChar { pos, ch }),
         };
@@ -213,56 +317,88 @@ fn lex_word(chars: &mut Chars<'_>) -> String {
     s
 }
 
-/// `0x..`, `0b..`, `0o..`, or plain decimal, with `_` separators. The leading
-/// digit has already been peeked (not consumed).
-fn lex_number(chars: &mut Chars<'_>) -> Result<u128, CalcError> {
+/// `0x..` / `0b..` / `0o..` — an exact integer — or a base-10 number that may
+/// carry a `.` fraction and/or an `e` exponent (making it a float). `_`
+/// separators are allowed. The leading digit/`.` has not been consumed.
+fn lex_number(chars: &mut Chars<'_>) -> Result<LitVal, CalcError> {
     let Some((pos0, first)) = chars.next() else {
         return Err(CalcError::UnexpectedEnd);
     };
 
-    let (base, mut acc, mut seen): (u128, u128, bool) = if first == '0' {
-        match chars.peek() {
-            Some(&(_, 'x' | 'X')) => {
-                chars.next();
-                (16, 0, false)
-            }
-            Some(&(_, 'b' | 'B')) => {
-                chars.next();
-                (2, 0, false)
-            }
-            Some(&(_, 'o' | 'O')) => {
-                chars.next();
-                (8, 0, false)
-            }
-            _ => (10, 0, true),
-        }
-    } else {
-        (10, u128::from(first as u32 - '0' as u32), true)
-    };
-
-    while let Some(&(dpos, c)) = chars.peek() {
-        if c == '_' {
-            chars.next();
-            continue;
-        }
-        let Some(d) = c.to_digit(base as u32) else {
-            if c.is_ascii_alphanumeric() {
-                return Err(CalcError::BadChar { pos: dpos, ch: c });
-            }
-            break;
+    // Radix-prefixed integers: 0x / 0b / 0o.
+    if first == '0' {
+        let base: Option<u128> = match chars.peek() {
+            Some(&(_, 'x' | 'X')) => Some(16),
+            Some(&(_, 'b' | 'B')) => Some(2),
+            Some(&(_, 'o' | 'O')) => Some(8),
+            _ => None,
         };
-        acc = acc
-            .checked_mul(base)
-            .and_then(|a| a.checked_add(u128::from(d)))
-            .ok_or(CalcError::Overflow)?;
-        seen = true;
+        if let Some(base) = base {
+            chars.next();
+            let mut acc: u128 = 0;
+            let mut seen = false;
+            while let Some(&(dpos, c)) = chars.peek() {
+                if c == '_' {
+                    chars.next();
+                    continue;
+                }
+                let Some(d) = c.to_digit(base as u32) else {
+                    if c.is_ascii_alphanumeric() {
+                        return Err(CalcError::BadChar { pos: dpos, ch: c });
+                    }
+                    break;
+                };
+                acc = acc
+                    .checked_mul(base)
+                    .and_then(|a| a.checked_add(u128::from(d)))
+                    .ok_or(CalcError::Overflow)?;
+                seen = true;
+                chars.next();
+            }
+            return if seen {
+                Ok(LitVal::I(acc))
+            } else {
+                Err(CalcError::Syntax { pos: pos0 })
+            };
+        }
+    }
+
+    // Base-10: collect the text, then decide integer vs float.
+    let mut text = String::new();
+    text.push(first);
+    let mut is_float = first == '.';
+    while let Some(&(dpos, c)) = chars.peek() {
+        match c {
+            '0'..='9' => text.push(c),
+            '_' => {}
+            '.' if !is_float => {
+                is_float = true;
+                text.push('.');
+            }
+            'e' | 'E' if !text.contains(['e', 'E']) => {
+                is_float = true;
+                text.push('e');
+                chars.next();
+                if let Some(&(_, sgn @ ('+' | '-'))) = chars.peek() {
+                    text.push(sgn);
+                    chars.next();
+                }
+                continue;
+            }
+            c if c.is_ascii_alphanumeric() => return Err(CalcError::BadChar { pos: dpos, ch: c }),
+            _ => break,
+        }
         chars.next();
     }
 
-    if seen {
-        Ok(acc)
+    if is_float {
+        text.parse::<f64>()
+            .map(LitVal::F)
+            .map_err(|_| CalcError::Syntax { pos: pos0 })
     } else {
-        Err(CalcError::Syntax { pos: pos0 })
+        text.parse::<u128>()
+            .map(LitVal::I)
+            .map_err(|_| CalcError::Overflow)
     }
 }
 
@@ -287,9 +423,9 @@ enum Op {
     Rem,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 enum Node {
-    Lit(u128),
+    Lit(LitVal),
     Neg(Box<Node>),
     Not(Box<Node>),
     Bin(Op, Box<Node>, Box<Node>),
@@ -336,7 +472,7 @@ impl Parser {
             return Err(CalcError::UnexpectedEnd);
         };
         match tok {
-            Tok::Int(v) => Ok(Node::Lit(v)),
+            Tok::Num(v) => Ok(Node::Lit(v)),
             Tok::Minus => Ok(Node::Neg(Box::new(self.expr(PREFIX_BP)?))),
             Tok::Plus => self.expr(PREFIX_BP),
             Tok::Tilde | Tok::Kw(Kw::Not) => Ok(Node::Not(Box::new(self.expr(PREFIX_BP)?))),
@@ -379,26 +515,33 @@ fn infix(t: &Tok) -> Option<(Op, u8, u8)> {
     Some((op, lbp, lbp + 1))
 }
 
-// --- evaluator -----------------------------------------------------------
+// --- integer evaluator -------------------------------------------------
 
-fn eval(node: &Node, w: Width) -> Result<u128, CalcError> {
+fn eval_int(node: &Node, w: Width, signed: bool) -> Result<u128, CalcError> {
     let mask = w.mask();
     Ok(match node {
-        Node::Lit(v) => v & mask,
-        Node::Neg(a) => (mask.wrapping_add(1).wrapping_sub(eval(a, w)?)) & mask,
-        Node::Not(a) => !eval(a, w)? & mask,
-        Node::Bin(op, a, b) => bin(*op, eval(a, w)?, eval(b, w)?, w)?,
+        Node::Lit(LitVal::I(v)) => v & mask,
+        Node::Lit(LitVal::F(_)) => return Err(CalcError::Domain("not a whole number")),
+        Node::Neg(a) => (mask.wrapping_add(1).wrapping_sub(eval_int(a, w, signed)?)) & mask,
+        Node::Not(a) => !eval_int(a, w, signed)? & mask,
+        Node::Bin(op, a, b) => bin(
+            *op,
+            eval_int(a, w, signed)?,
+            eval_int(b, w, signed)?,
+            w,
+            signed,
+        )?,
     })
 }
 
-fn bin(op: Op, x: u128, y: u128, w: Width) -> Result<u128, CalcError> {
+fn bin(op: Op, x: u128, y: u128, w: Width, signed: bool) -> Result<u128, CalcError> {
     let mask = w.mask();
     let bits = w.bits();
     Ok(match op {
         Op::Add => x.wrapping_add(y) & mask,
         Op::Sub => x.wrapping_sub(y) & mask,
         Op::Mul => x.wrapping_mul(y) & mask,
-        Op::Div | Op::Rem => {
+        Op::Div | Op::Rem if signed => {
             let a = to_signed(x, w);
             let b = to_signed(y, w);
             if b == 0 {
@@ -410,6 +553,12 @@ fn bin(op: Op, x: u128, y: u128, w: Width) -> Result<u128, CalcError> {
                 a.wrapping_rem(b)
             };
             (r as u128) & mask
+        }
+        Op::Div | Op::Rem => {
+            if y == 0 {
+                return Err(CalcError::DivisionByZero);
+            }
+            (if op == Op::Div { x / y } else { x % y }) & mask
         }
         Op::And => x & y & mask,
         Op::Nand => !(x & y) & mask,
@@ -465,6 +614,196 @@ fn shift_amount(y: u128, w: Width) -> Option<u32> {
     }
 }
 
+// --- float evaluator -------------------------------------------------
+
+/// Evaluate `node` as ordinary `f64` arithmetic. Bitwise operators are not
+/// defined here.
+fn eval_float(node: &Node) -> Result<f64, CalcError> {
+    Ok(match node {
+        Node::Lit(LitVal::F(v)) => *v,
+        Node::Lit(LitVal::I(v)) => *v as f64,
+        Node::Neg(a) => -eval_float(a)?,
+        Node::Not(_) => return Err(CalcError::Domain("bitwise ops need an integer mode")),
+        Node::Bin(op, a, b) => {
+            let x = eval_float(a)?;
+            let y = eval_float(b)?;
+            match op {
+                Op::Add => x + y,
+                Op::Sub => x - y,
+                Op::Mul => x * y,
+                Op::Div => x / y,
+                Op::Rem => libm::fmod(x, y),
+                _ => return Err(CalcError::Domain("bitwise ops need an integer mode")),
+            }
+        }
+    })
+}
+
+/// Round `value` to the nearest number representable by a
+/// `sign` / `exp` / `mant` float layout and return its raw bits.
+fn float_encode(value: f64, sign: u32, exp: u32, mant: u32) -> u64 {
+    // Native fast paths for the two standard layouts.
+    if sign == 1 && exp == 8 && mant == 23 {
+        return u64::from((value as f32).to_bits());
+    }
+    if sign == 1 && exp == 11 && mant == 52 {
+        return value.to_bits();
+    }
+
+    let sign_shift = exp + mant;
+    let exp_all = (1u64 << exp) - 1;
+    let mant_mask = (1u64 << mant) - 1;
+    let bias = (1i64 << (exp - 1)) - 1;
+
+    let negative = value.is_sign_negative();
+    let sign_bit = if sign == 1 && negative {
+        1u64 << sign_shift
+    } else {
+        0
+    };
+    let mag = libm::fabs(value);
+    let qnan = 1u64 << (mant - 1);
+
+    if mag.is_nan() || (sign == 0 && negative && mag != 0.0) {
+        return sign_bit | (exp_all << mant) | qnan;
+    }
+    if mag.is_infinite() {
+        return sign_bit | (exp_all << mant);
+    }
+    if mag == 0.0 {
+        return sign_bit;
+    }
+
+    // mag = frac * 2^e2, with 0.5 <= frac < 1  ->  significand in [1, 2), E = e2 - 1
+    let (_frac, e2) = libm::frexp(mag);
+    let unbiased = i64::from(e2) - 1;
+    let mut biased = unbiased + bias;
+
+    if biased >= exp_all as i64 {
+        return sign_bit | (exp_all << mant); // overflow -> infinity
+    }
+
+    if biased <= 0 {
+        // subnormal: value = m * 2^(1 - bias - mant)
+        let step = 1 - bias - i64::from(mant);
+        let scaled = libm::ldexp(mag, -(step as i32));
+        let m = libm::roundeven(scaled) as u64;
+        return if m == 0 {
+            sign_bit
+        } else if m > mant_mask {
+            sign_bit | (1u64 << mant) // rounded up to the smallest normal
+        } else {
+            sign_bit | m
+        };
+    }
+
+    // normal: mantissa = round((significand - 1) * 2^mant)
+    let significand = libm::ldexp(mag, -(unbiased as i32)); // in [1, 2)
+    let scaled = (significand - 1.0) * (1u64 << mant) as f64;
+    let mut m = libm::roundeven(scaled) as u64;
+    if m > mant_mask {
+        m = 0;
+        biased += 1;
+        if biased >= exp_all as i64 {
+            return sign_bit | (exp_all << mant);
+        }
+    }
+    sign_bit | ((biased as u64) << mant) | (m & mant_mask)
+}
+
+/// Decode raw `bits` of a `sign` / `exp` / `mant` float layout to `f64`.
+fn float_decode(bits: u64, sign: u32, exp: u32, mant: u32) -> f64 {
+    if sign == 1 && exp == 8 && mant == 23 {
+        return f64::from(f32::from_bits(bits as u32));
+    }
+    if sign == 1 && exp == 11 && mant == 52 {
+        return f64::from_bits(bits);
+    }
+
+    let exp_all = (1u64 << exp) - 1;
+    let mant_mask = (1u64 << mant) - 1;
+    let bias = (1i64 << (exp - 1)) - 1;
+
+    let m = bits & mant_mask;
+    let e = (bits >> mant) & exp_all;
+    let neg = sign == 1 && (bits >> (exp + mant)) & 1 == 1;
+
+    let val = if e == exp_all {
+        if m == 0 {
+            f64::INFINITY
+        } else {
+            f64::NAN
+        }
+    } else if e == 0 {
+        libm::ldexp(m as f64, (1 - bias - i64::from(mant)) as i32)
+    } else {
+        libm::ldexp(
+            ((1u64 << mant) | m) as f64,
+            (e as i64 - bias - i64::from(mant)) as i32,
+        )
+    };
+    if neg {
+        -val
+    } else {
+        val
+    }
+}
+
+/// Format a float value for the value row, at a precision that suits a
+/// `mant`-bit mantissa.
+fn format_f64(v: f64, mant: u32) -> String {
+    use core::fmt::Write;
+
+    if v.is_nan() {
+        return String::from("NaN");
+    }
+    if v.is_infinite() {
+        return String::from(if v < 0.0 {
+            "\u{2212}\u{221E}"
+        } else {
+            "\u{221E}"
+        });
+    }
+    if v == 0.0 {
+        return String::from(if v.is_sign_negative() {
+            "\u{2212}0"
+        } else {
+            "0"
+        });
+    }
+
+    // ~decimal digits that round-trip a (mant+1)-bit significand
+    let digits = libm::ceil(f64::from(mant + 1) * core::f64::consts::LOG10_2);
+    let sig = (digits as u32).clamp(3, 17);
+    let r = round_to_sig(v, sig);
+    let a = libm::fabs(r);
+
+    let mut s = String::new();
+    if a != 0.0 && !(1e-4..1e16).contains(&a) {
+        let _ = write!(s, "{r:e}");
+    } else {
+        let _ = write!(s, "{r}");
+    }
+    // use the app's minus sign
+    if let Some(stripped) = s.strip_prefix('-') {
+        let mut out = String::from("\u{2212}");
+        out.push_str(stripped);
+        out
+    } else {
+        s
+    }
+}
+
+/// Round `v` to `sig` significant decimal digits.
+fn round_to_sig(v: f64, sig: u32) -> f64 {
+    if v == 0.0 || !v.is_finite() {
+        return v;
+    }
+    let d = i32::try_from(sig).unwrap_or(17) - 1 - libm::floor(libm::log10(libm::fabs(v))) as i32;
+    let factor = libm::pow(10.0, f64::from(d));
+    libm::round(v * factor) / factor
+}
+
 #[cfg(test)]
 mod tests {
     use super::Width::{W16, W32, W64, W8};
@@ -472,6 +811,172 @@ mod tests {
 
     fn ev(s: &str, w: Width) -> u64 {
         evaluate(s, w).unwrap_or_else(|e| panic!("`{s}` failed: {e:?}"))
+    }
+
+    fn evf(s: &str, fmt: NumFormat) -> u64 {
+        evaluate_fmt(s, fmt).unwrap_or_else(|e| panic!("`{s}` failed: {e:?}"))
+    }
+
+    const F32: NumFormat = NumFormat::Float {
+        sign: 1,
+        exp: 8,
+        mant: 23,
+    };
+    const F64: NumFormat = NumFormat::Float {
+        sign: 1,
+        exp: 11,
+        mant: 52,
+    };
+    const F16: NumFormat = NumFormat::Float {
+        sign: 1,
+        exp: 5,
+        mant: 10,
+    };
+
+    #[test]
+    fn unsigned_division_differs_from_signed() {
+        let u8f = NumFormat::Int {
+            width: W8,
+            signed: false,
+        };
+        let s8f = NumFormat::Int {
+            width: W8,
+            signed: true,
+        };
+        // 0xFF is 255 unsigned, -1 signed
+        assert_eq!(evf("0xFF / 2", u8f), 127);
+        assert_eq!(evf("0xFF / 2", s8f), 0);
+        assert_eq!(evf("0xFF mod 4", u8f), 3);
+        assert_eq!(evf("200 * 2", u8f), 144); // still wraps
+        assert!(matches!(
+            evaluate_fmt("1 / 0", u8f),
+            Err(CalcError::DivisionByZero)
+        ));
+    }
+
+    #[test]
+    fn unsigned_and_signed_display() {
+        let u8f = NumFormat::Int {
+            width: W8,
+            signed: false,
+        };
+        let s8f = NumFormat::Int {
+            width: W8,
+            signed: true,
+        };
+        assert_eq!(format_value(0xFF, u8f), "255");
+        assert_eq!(format_value(0xFF, s8f), "-1");
+        assert_eq!(format_value(0x80, s8f), "-128");
+    }
+
+    #[test]
+    fn float_standard_layouts() {
+        // 1.5 -> 0x3FC00000 (f32), 0x3FF8000000000000 (f64)
+        assert_eq!(evf("1.5", F32), 0x3FC0_0000);
+        assert_eq!(evf("1.5", F64), 0x3FF8_0000_0000_0000);
+        assert_eq!(evf("0.5 + 0.25", F32), 0x3F40_0000); // 0.75
+        assert_eq!(evf("1 / 4", F32), 0x3E80_0000); // 0.25
+        assert_eq!(evf("-2.0", F32), 0xC000_0000);
+        assert_eq!(evf("1 / 0", F32), 0x7F80_0000); // +inf, not an error
+        assert_eq!(evf("0 / 0", F32) & 0x7FFF_FFFF, 0x7FC0_0000); // NaN
+    }
+
+    #[test]
+    fn float_custom_half_precision() {
+        // IEEE half: 1.0 -> 0x3C00, 2.0 -> 0x4000, -1.0 -> 0xBC00,
+        // smallest normal -> 0x0400, largest subnormal -> 0x03FF
+        assert_eq!(evf("1.0", F16), 0x3C00);
+        assert_eq!(evf("2.0", F16), 0x4000);
+        assert_eq!(evf("-1.0", F16), 0xBC00);
+        assert_eq!(evf("0.5 * 0.5", F16), 0x3400); // 0.25
+        assert_eq!(evf("65504", F16), 0x7BFF); // max finite half
+        assert_eq!(evf("70000", F16), 0x7C00); // overflow -> inf
+    }
+
+    #[test]
+    fn float_custom_generic_matches_native_f32() {
+        for bits in [
+            0x3FC0_0000u32,
+            0x4049_0FDB,
+            0xC280_0000,
+            0x0000_0001,
+            0x7F7F_FFFF,
+        ] {
+            let v = f64::from(f32::from_bits(bits));
+            // generic encoder (not the fast path) reproduces the f32 bits
+            assert_eq!(float_encode(v, 1, 8, 23), u64::from(bits));
+        }
+    }
+
+    #[test]
+    fn float_value_strings() {
+        assert_eq!(format_value(evf("3.14159265", F64), F64), "3.14159265");
+        assert_eq!(format_value(evf("1 / 3", F64), F64), "0.3333333333333333");
+        assert_eq!(format_value(evf("1 / 3", F16), F16), "0.3333");
+        assert_eq!(format_value(evf("1 / 0", F32), F32), "\u{221E}");
+        assert_eq!(format_value(evf("-1 / 0", F32), F32), "\u{2212}\u{221E}");
+        assert_eq!(format_value(0x7FC0_0000, F32), "NaN");
+        assert_eq!(format_value(evf("2.0", F16), F16), "2");
+    }
+
+    #[test]
+    fn float_inf_and_nan_literals_round_trip() {
+        assert_eq!(evf("inf", F32), 0x7F80_0000);
+        assert_eq!(evf("-inf", F32), 0xFF80_0000);
+        assert_eq!(evf("inf - inf", F32) & 0x7FFF_FFFF, 0x7FC0_0000); // NaN
+        assert_eq!(format_value(evf("nan + 1", F32), F32), "NaN");
+        assert_eq!(evf("inf * 2", F16), 0x7C00);
+    }
+
+    #[test]
+    fn float_mode_rejects_bitwise() {
+        assert!(matches!(
+            evaluate_fmt("1.5 & 2", F32),
+            Err(CalcError::Domain(_))
+        ));
+        assert!(matches!(
+            evaluate_fmt("~1.0", F32),
+            Err(CalcError::Domain(_))
+        ));
+    }
+
+    #[test]
+    fn int_mode_rejects_fractional_literal() {
+        assert!(matches!(
+            evaluate_fmt(
+                "1.5",
+                NumFormat::Int {
+                    width: W32,
+                    signed: true
+                }
+            ),
+            Err(CalcError::Domain(_))
+        ));
+    }
+
+    #[test]
+    fn wire_decoding_clamps() {
+        assert_eq!(
+            NumFormat::from_wire(0, 2, 0, 0),
+            NumFormat::Int {
+                width: W32,
+                signed: true
+            }
+        );
+        assert_eq!(
+            NumFormat::from_wire(1, 0, 0, 0),
+            NumFormat::Int {
+                width: W8,
+                signed: false
+            }
+        );
+        // sign+exp+mant must fit in 64
+        let f = NumFormat::from_wire(2, 1, 40, 40);
+        if let NumFormat::Float { sign, exp, mant } = f {
+            assert!(sign + exp + mant <= 64);
+        } else {
+            panic!("expected float");
+        }
     }
 
     #[test]

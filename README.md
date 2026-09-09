@@ -4,8 +4,8 @@ A tiny, permission-free calculator for Android — built for GrapheneOS and
 Accrescent, distributed via Obtainium for now.
 
 - **No permissions.** The manifest declares none. Not `INTERNET`, nothing.
-- **Small.** One Rust `.so` (~390 KB, arm64 only), no Compose, no AppCompat,
-  no Material library. Release APK ≈ **545 KB**.
+- **Small.** One Rust `.so` (~435 KB, arm64 only), no Compose, no AppCompat,
+  no Material library. Release APK ≈ **610 KB**.
 - **Rust core, Kotlin shell.** All arithmetic lives in `calc-core` (Rust,
   `no_std`); Kotlin does UI and the widget.
 - **Interactive lock-screen widget.** Every key is a broadcast, so the keypad
@@ -19,9 +19,11 @@ Accrescent, distributed via Obtainium for now.
   See [FEATURES.md](FEATURES.md) for a point-by-point comparison.
 - **Graphing.** `y = f(x)` plots for up to four functions at once — drag to
   pan, pinch to zoom, tap to trace. The same Rust engine samples the curves.
-- **Programmer mode.** Fixed-width (8/16/32/64-bit) integer maths with a live
-  BIN / OCT / DEC / HEX readout, a tappable bit grid, bitwise ops, shifts and
-  rotations, two's-complement, and base-aware digit entry.
+- **Programmer mode.** Integer maths — signed or unsigned, 8/16/32/64-bit — and
+  float maths: IEEE presets (half, bfloat16, float, double) or a **custom**
+  sign/exponent/mantissa layout. Live BIN / OCT / DEC / HEX readout, a tappable
+  bit grid (sign/exponent/mantissa colour-coded for floats), bitwise ops,
+  shifts, rotations, two's-complement, and base-aware digit entry.
 
 ## Screenshots
 
@@ -40,7 +42,7 @@ Accrescent, distributed via Obtainium for now.
 <p align="center">
   <img src="docs/screenshots/graph.png" width="31%" alt="Graphing two functions with a square grid and trace">
   &nbsp;
-  <img src="docs/screenshots/programmer.png" width="31%" alt="Programmer mode: multi-base readout, bit grid, bitwise keypad">
+  <img src="docs/screenshots/programmer.png" width="31%" alt="Programmer mode in f32: 1.5 x 2.5 = 3.75 with the IEEE bit pattern and bit grid">
 </p>
 <p align="center">
   <img src="docs/screenshots/landscape.png" width="64%" alt="Landscape: scientific and numeric keypads side by side">
@@ -55,7 +57,7 @@ Accrescent, distributed via Obtainium for now.
 | 2 | Interactive home/lock-screen widget, responsive sizes | ✅ |
 | 3 | Scientific: trig + inverses, hyperbolics, logs, roots, `nCr`/`gcd`, DEG/RAD/GRAD | ✅ |
 | 4 | TI-84 graphing | 🔨 plotting, pan/zoom, trace done; table/intersections next |
-| 5 | Programmer calculator: bin/oct/dec/hex, bitwise, shifts, rotations, 8–64-bit words | ✅ |
+| 5 | Programmer calculator: signed/unsigned ints, IEEE + custom floats, bitwise, shifts, rotations, bit grid | ✅ |
 
 ## Layout
 
@@ -82,9 +84,12 @@ through the engine (`calc_core::sample`), so plotted functions accept the same
 syntax as the calculator, including implicit multiplication (`2x`, `3(x+1)`).
 
 Programmer mode uses a **separate** engine (`calc_core::programmer`): a small
-Pratt parser over fixed-width two's-complement integers. Arithmetic runs in
-`u128` with wrapping semantics and is masked to the chosen word size after
-every step, so results wrap exactly as they would in a hardware register.
+Pratt parser with two evaluators. Integer arithmetic runs in `u128` with
+wrapping semantics, masked to the word size after every step, so it wraps
+exactly as a hardware register would. Float arithmetic runs in `f64`, then the
+result is rounded (ties to even) to the nearest value representable by the
+chosen `sign` / `exponent` / `mantissa` layout — `f32` / `f64` use the native
+conversion, anything else a generic minifloat encoder.
 
 ## Building
 

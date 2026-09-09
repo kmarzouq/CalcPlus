@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:minHeight="48dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/prog_cf_sign"
+            android:textColor="@color/display_text"
+            android:textSize="15sp" />
+        <CheckBox
+            android:id="@+id/signBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:minHeight="48dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/prog_cf_exp"
+            android:textColor="@color/display_text"
+            android:textSize="15sp" />
+        <Button android:id="@+id/expMinus" style="@style/CalcChip" android:text="−" />
+        <TextView android:id="@+id/expValue" style="@style/StepperValue" />
+        <Button android:id="@+id/expPlus" style="@style/CalcChip" android:text="+" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:minHeight="48dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/prog_cf_mant"
+            android:textColor="@color/display_text"
+            android:textSize="15sp" />
+        <Button android:id="@+id/mantMinus" style="@style/CalcChip" android:text="−" />
+        <TextView android:id="@+id/mantValue" style="@style/StepperValue" />
+        <Button android:id="@+id/mantPlus" style="@style/CalcChip" android:text="+" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/totalBits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/result_text"
+        android:textSize="13sp" />
+</LinearLayout>

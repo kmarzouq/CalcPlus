@@ -9,7 +9,7 @@ import org.junit.Test
 /** Input-rule / formatting tests for the programmer calculator. Pure JVM. */
 class ProgDocTest {
 
-    private val w = WordSize.QWORD
+    private val w = 64
 
     private fun hex(vararg cs: Char): ProgDoc =
         cs.fold(ProgDoc(radix = Radix.HEX)) { d, c -> d.digit(c) }
@@ -71,8 +71,33 @@ class ProgDocTest {
         // -1 in DEC, byte width, becomes FF in hex
         val d = ProgDoc(radix = Radix.DEC).digit('1').negate()
         assertEquals("-1", d.display())
-        val hex = d.withRadix(Radix.HEX, WordSize.BYTE)
+        val hex = d.withRadix(Radix.HEX, 8)
         assertEquals("FF", hex.display())
+    }
+
+    @Test fun floatLiteralsCarryPointAndExponent() {
+        val d = ProgDoc(radix = Radix.DEC).digit('1').dot().digit('5').op(ProgOp.MUL).digit('2')
+        assertEquals("1.5 × 2", d.display())
+        assertEquals("1.5*2", d.engineInput())
+        // a leading dot becomes "0."
+        assertEquals("0.5", ProgDoc(radix = Radix.DEC).dot().digit('5').display())
+        // incomplete while the literal ends in '.'
+        assertTrue(ProgDoc(radix = Radix.DEC).digit('3').dot().endsOpen())
+    }
+
+    @Test fun numFormatWireAndChip() {
+        assertEquals("i32", (NumFormat.IntFmt(WordSize.DWORD, true)).chip)
+        assertEquals("u8", (NumFormat.IntFmt(WordSize.BYTE, false)).chip)
+        assertEquals("f32", NumFormat.FloatFmt(1, 8, 23).chip)
+        assertEquals("1·5·2", NumFormat.FloatFmt(1, 5, 2).chip)
+        val f = NumFormat.FloatFmt(1, 8, 23)
+        assertEquals(2, f.mode)
+        assertEquals(1, f.p1); assertEquals(8, f.p2); assertEquals(23, f.p3)
+        assertEquals(f, NumFormat.parse(f.serialize()))
+        assertEquals(
+            NumFormat.IntFmt(WordSize.WORD, false),
+            NumFormat.parse(NumFormat.IntFmt(WordSize.WORD, false).serialize()),
+        )
     }
 
     @Test fun serializeRoundTrips() {
@@ -83,15 +108,15 @@ class ProgDocTest {
     }
 
     @Test fun formatSignExtendsForWidth() {
-        assertEquals(-1L, ProgFormat.signExtend(0xFFL, WordSize.BYTE))
-        assertEquals(127L, ProgFormat.signExtend(0x7FL, WordSize.BYTE))
-        assertEquals(255L, ProgFormat.signExtend(0xFFL, WordSize.WORD))
+        assertEquals(-1L, ProgFormat.signExtend(0xFFL, 8))
+        assertEquals(127L, ProgFormat.signExtend(0x7FL, 8))
+        assertEquals(255L, ProgFormat.signExtend(0xFFL, 16))
     }
 
     @Test fun groupedFormatting() {
-        assertEquals("FFAB", ProgFormat.grouped(0xFFABL, Radix.HEX, WordSize.QWORD))
-        assertEquals("FF FFAB", ProgFormat.grouped(0xFFFFABL, Radix.HEX, WordSize.QWORD))
-        assertEquals("1010 1011", ProgFormat.grouped(0xABL, Radix.BIN, WordSize.QWORD))
-        assertEquals("-96", ProgFormat.grouped(0xA0L, Radix.DEC, WordSize.BYTE))
+        assertEquals("FFAB", ProgFormat.grouped(0xFFABL, Radix.HEX, 64))
+        assertEquals("FF FFAB", ProgFormat.grouped(0xFFFFABL, Radix.HEX, 64))
+        assertEquals("1010 1011", ProgFormat.grouped(0xABL, Radix.BIN, 64))
+        assertEquals("-96", ProgFormat.grouped(0xA0L, Radix.DEC, 8))
     }
 }

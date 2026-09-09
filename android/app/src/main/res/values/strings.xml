@@ -24,9 +24,16 @@
     <string name="cd_programmer">Programmer calculator</string>
 
     <string name="prog_title">Programmer</string>
-    <string name="prog_word">Word size</string>
+    <string name="prog_word">Number format</string>
     <string name="prog_cd_shl">Shift left</string>
     <string name="prog_cd_shr">Shift right</string>
+    <string name="prog_format_title">Number format</string>
+    <string name="prog_custom_float">Custom float…</string>
+    <string name="prog_cf_title">Custom float</string>
+    <string name="prog_cf_sign">Sign bit</string>
+    <string name="prog_cf_exp">Exponent bits</string>
+    <string name="prog_cf_mant">Mantissa bits</string>
+    <string name="prog_cf_total">Total: %1$d bits  ·  bias %2$d</string>
 
     <string name="graph_title">Graph</string>
     <string name="graph_reset">Reset view</string>

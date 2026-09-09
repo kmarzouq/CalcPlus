@@ -28,7 +28,7 @@ pub mod programmer;
 pub use error::CalcError;
 pub use eval::{AngleMode, Context};
 pub use format::FormatOptions;
-pub use programmer::Width;
+pub use programmer::{NumFormat, Width};
 pub use rust_decimal::Decimal;
 
 /// Evaluate `input` against a fresh radian-mode context.
