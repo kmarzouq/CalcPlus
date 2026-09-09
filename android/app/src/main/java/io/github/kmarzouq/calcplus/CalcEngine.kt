@@ -97,6 +97,31 @@ object CalcEngine {
         }
     }
 
+    /**
+     * Evaluate a programmer-calculator integer expression ([engineInput] is
+     * already ASCII with base prefixes). [width]: 0=8, 1=16, 2=32, 3=64 bits.
+     */
+    fun programmer(engineInput: String, width: Int): ProgOutcome {
+        if (!NativeBridge.available) return ProgOutcome.Error("Engine unavailable")
+        if (engineInput.isBlank()) return ProgOutcome.Pending
+        return try {
+            ProgOutcome.Value(NativeBridge.nativeProgEval(engineInput, width))
+        } catch (e: ArithmeticException) {
+            val m = e.message.orEmpty()
+            ProgOutcome.Error(
+                when {
+                    m.contains("divi", ignoreCase = true) -> "Can't divide by zero"
+                    m.contains("end") || m.contains("empty") -> "Incomplete"
+                    m.contains("large") -> "Number too large"
+                    m.contains("unknown", ignoreCase = true) -> "Unknown operator"
+                    else -> "Error"
+                },
+            )
+        } catch (_: RuntimeException) {
+            ProgOutcome.Error("Error")
+        }
+    }
+
     /** Map the pretty display form to plain ASCII the engine can lex. */
     fun normalize(display: String): String = buildString(display.length) {
         val src = display

@@ -13,9 +13,9 @@
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::ptr;
 
-use calc_core::{evaluate_to_string, AngleMode, FormatOptions};
+use calc_core::{evaluate_to_string, programmer, AngleMode, FormatOptions, Width};
 use jni::objects::{JClass, JString};
-use jni::sys::{jchar, jdouble, jdoubleArray, jint, jstring};
+use jni::sys::{jchar, jdouble, jdoubleArray, jint, jlong, jstring};
 use jni::JNIEnv;
 
 fn angle_of(mode: jint) -> AngleMode {
@@ -111,6 +111,44 @@ pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeSampl
             arr.into_raw()
         }
         Err(_) => ptr::null_mut(),
+    }
+}
+
+/// `NativeBridge.nativeProgEval(expr, width)` — evaluate a programmer-calculator
+/// integer expression. `width`: `0` = 8-bit, `1` = 16, `2` = 32, anything else
+/// = 64. Returns the result's bit pattern as a `long` (reinterpret it as
+/// unsigned for display). Throws `java.lang.ArithmeticException` on any error.
+#[no_mangle]
+pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeProgEval<'l>(
+    mut env: JNIEnv<'l>,
+    _class: JClass<'l>,
+    expr: JString<'l>,
+    width: jint,
+) -> jlong {
+    let outcome = catch_unwind(AssertUnwindSafe(
+        || -> Result<Option<u64>, jni::errors::Error> {
+            let input: String = env.get_string(&expr)?.into();
+            match programmer::evaluate(&input, Width::from_code(width)) {
+                Ok(v) => Ok(Some(v)),
+                Err(e) => {
+                    env.throw_new("java/lang/ArithmeticException", e.to_string())?;
+                    Ok(None)
+                }
+            }
+        },
+    ));
+
+    match outcome {
+        Ok(Ok(Some(v))) => v as jlong,
+        Ok(Ok(None)) => 0,
+        Ok(Err(e)) => {
+            let _ = env.throw_new("java/lang/RuntimeException", format!("jni error: {e}"));
+            0
+        }
+        Err(_) => {
+            let _ = env.throw_new("java/lang/RuntimeException", "calc engine panicked");
+            0
+        }
     }
 }
 

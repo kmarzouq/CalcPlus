@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/window_bg"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout style="@style/AppBar">
+        <ImageButton
+            android:id="@+id/back"
+            style="@style/AppBarIcon"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="@string/cd_back" />
+        <TextView
+            style="@style/AppBarTitle"
+            android:text="@string/prog_title" />
+        <Button
+            android:id="@+id/wordToggle"
+            style="@style/CalcChip"
+            android:text="64"
+            android:contentDescription="@string/prog_word" />
+    </LinearLayout>
+
+    <!-- Multi-base readout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/screen_padding"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp">
+
+        <HorizontalScrollView
+            android:id="@+id/formulaScroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:fadingEdgeLength="20dp"
+            android:requiresFadingEdge="horizontal">
+
+            <TextView
+                android:id="@+id/formula"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="26dp"
+                android:gravity="end|center_vertical"
+                android:maxLines="1"
+                android:textColor="@color/result_text"
+                android:textSize="16sp"
+                android:fontFamily="monospace" />
+        </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="18dp"
+            android:gravity="end"
+            android:textColor="@color/key_text_clear"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:id="@+id/rowHex"
+            style="@style/ProgBaseRow">
+            <TextView style="@style/ProgBaseLabel" android:text="HEX" />
+            <TextView android:id="@+id/valHex" style="@style/ProgBaseValue" tools:text="7F" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rowDec"
+            style="@style/ProgBaseRow">
+            <TextView style="@style/ProgBaseLabel" android:text="DEC" />
+            <TextView android:id="@+id/valDec" style="@style/ProgBaseValue" tools:text="127" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rowOct"
+            style="@style/ProgBaseRow">
+            <TextView style="@style/ProgBaseLabel" android:text="OCT" />
+            <TextView android:id="@+id/valOct" style="@style/ProgBaseValue" tools:text="177" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rowBin"
+            style="@style/ProgBaseRow">
+            <TextView style="@style/ProgBaseLabel" android:text="BIN" />
+            <TextView android:id="@+id/valBin" style="@style/ProgBaseValue" tools:text="0111 1111" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <!-- Bit grid: rows built in code from the current word size -->
+    <LinearLayout
+        android:id="@+id/bitGrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <!-- Keypad: 6 columns × 6 rows -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingHorizontal="4dp"
+        android:paddingBottom="6dp">
+
+        <LinearLayout style="@style/CalcRow">
+            <Button android:id="@+id/keyShl" style="@style/CalcKey.Prog.Op" android:text="«" android:contentDescription="@string/prog_cd_shl" />
+            <Button android:id="@+id/keyShr" style="@style/CalcKey.Prog.Op" android:text="»" android:contentDescription="@string/prog_cd_shr" />
+            <Button android:id="@+id/keyAnd" style="@style/CalcKey.Prog.Op" android:text="AND" />
+            <Button android:id="@+id/keyOr" style="@style/CalcKey.Prog.Op" android:text="OR" />
+            <Button android:id="@+id/keyXor" style="@style/CalcKey.Prog.Op" android:text="XOR" />
+            <Button android:id="@+id/keyNot" style="@style/CalcKey.Prog.Op" android:text="NOT" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/CalcRow">
+            <Button android:id="@+id/keyRol" style="@style/CalcKey.Prog.Op" android:text="RoL" />
+            <Button android:id="@+id/keyRor" style="@style/CalcKey.Prog.Op" android:text="RoR" />
+            <Button android:id="@+id/keyA" style="@style/CalcKey.Prog" android:text="A" />
+            <Button android:id="@+id/keyB" style="@style/CalcKey.Prog" android:text="B" />
+            <Button android:id="@+id/keyC" style="@style/CalcKey.Prog" android:text="C" />
+            <Button android:id="@+id/keyClear" style="@style/CalcKey.Prog.Clear" android:text="@string/key_clear" android:contentDescription="@string/cd_clear" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/CalcRow">
+            <Button android:id="@+id/keyD" style="@style/CalcKey.Prog" android:text="D" />
+            <Button android:id="@+id/keyE" style="@style/CalcKey.Prog" android:text="E" />
+            <Button android:id="@+id/keyF" style="@style/CalcKey.Prog" android:text="F" />
+            <Button android:id="@+id/keyLparen" style="@style/CalcKey.Prog.Op" android:text="(" />
+            <Button android:id="@+id/keyRparen" style="@style/CalcKey.Prog.Op" android:text=")" />
+            <Button android:id="@+id/keyDelete" style="@style/CalcKey.Prog" android:text="@string/key_delete" android:contentDescription="@string/cd_delete" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/CalcRow">
+            <Button android:id="@+id/key7" style="@style/CalcKey.Prog" android:text="7" />
+            <Button android:id="@+id/key8" style="@style/CalcKey.Prog" android:text="8" />
+            <Button android:id="@+id/key9" style="@style/CalcKey.Prog" android:text="9" />
+            <Button android:id="@+id/keyDiv" style="@style/CalcKey.Prog.Op" android:text="@string/key_divide" />
+            <Button android:id="@+id/keyPct" style="@style/CalcKey.Prog.Op" android:text="%" />
+            <Button android:id="@+id/keyMod" style="@style/CalcKey.Prog.Op" android:text="MOD" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/CalcRow">
+            <Button android:id="@+id/key4" style="@style/CalcKey.Prog" android:text="4" />
+            <Button android:id="@+id/key5" style="@style/CalcKey.Prog" android:text="5" />
+            <Button android:id="@+id/key6" style="@style/CalcKey.Prog" android:text="6" />
+            <Button android:id="@+id/keyMul" style="@style/CalcKey.Prog.Op" android:text="@string/key_multiply" />
+            <Button android:id="@+id/keyNeg" style="@style/CalcKey.Prog" android:text="@string/key_negate" />
+            <Button android:id="@+id/keyEquals" style="@style/CalcKey.Prog.Equals" android:text="@string/key_equals" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/CalcRow">
+            <Button android:id="@+id/key1" style="@style/CalcKey.Prog" android:text="1" />
+            <Button android:id="@+id/key2" style="@style/CalcKey.Prog" android:text="2" />
+            <Button android:id="@+id/key3" style="@style/CalcKey.Prog" android:text="3" />
+            <Button android:id="@+id/keySub" style="@style/CalcKey.Prog.Op" android:text="@string/key_subtract" />
+            <Button android:id="@+id/key0" style="@style/CalcKey.Prog" android:text="0" />
+            <Button android:id="@+id/keyAdd" style="@style/CalcKey.Prog.Op" android:text="@string/key_add" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

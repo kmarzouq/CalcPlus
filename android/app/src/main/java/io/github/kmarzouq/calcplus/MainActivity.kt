@@ -48,6 +48,9 @@ class MainActivity : BaseActivity() {
         ui.graphButton.setOnClickListener {
             startActivity(Intent(this, GraphActivity::class.java))
         }
+        ui.programmerButton.setOnClickListener {
+            startActivity(Intent(this, ProgrammerActivity::class.java))
+        }
         ui.settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }

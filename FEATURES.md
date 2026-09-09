@@ -38,8 +38,9 @@ Pixel/AOSP). This is a running audit — where CalcPlus differs, it says so.
 | GRAD angle mode | — |
 | Interactive lock-screen widget with responsive 1/3 · 2/3 · 3/3 sizes | — |
 | **Graphing** — `y = f(x)` for up to 4 functions, pan / pinch-zoom / tap-to-trace, square auto-window, implicit multiplication (`2x`, `3(x+1)`) | — |
+| **Programmer mode** — 8/16/32/64-bit integers, live BIN/OCT/DEC/HEX readout, tappable bit grid, `AND OR XOR NOT NAND NOR XNOR`, `<< >>`, `RoL RoR`, `MOD`, two's-complement | — |
 | Decimal (base-10) arithmetic — `0.1 + 0.2 == 0.3` exactly | — |
-| Zero permissions, ~500 KB, Rust core | — |
+| Zero permissions, ~545 KB, Rust core | — |
 
 ## Deliberate differences
 

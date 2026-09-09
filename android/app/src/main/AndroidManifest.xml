@@ -48,6 +48,12 @@
             android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".MainActivity" />
 
+        <activity
+            android:name=".ProgrammerActivity"
+            android:exported="false"
+            android:configChanges="keyboardHidden"
+            android:parentActivityName=".MainActivity" />
+
         <!-- Interactive calculator widget. Works on the home screen and, on
              Android 16 QPR2+ / GrapheneOS, the lock screen widget page. -->
         <receiver

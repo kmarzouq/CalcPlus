@@ -48,6 +48,12 @@
             android:contentDescription="@string/cd_graph" />
 
         <ImageButton
+            android:id="@+id/programmerButton"
+            style="@style/ToolbarIcon"
+            android:src="@drawable/ic_code"
+            android:contentDescription="@string/cd_programmer" />
+
+        <ImageButton
             android:id="@+id/settingsButton"
             style="@style/ToolbarIcon"
             android:src="@drawable/ic_settings"

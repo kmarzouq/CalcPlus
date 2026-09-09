@@ -56,11 +56,36 @@ object Settings {
             .apply()
     }
 
+    // --- programmer calculator -----------------------------------------
+
+    fun progState(ctx: Context): String = prefs(ctx).getString(KEY_PROG, "").orEmpty()
+
+    fun setProgState(ctx: Context, tokens: String) {
+        prefs(ctx).edit().putString(KEY_PROG, tokens).apply()
+    }
+
+    fun progRadix(ctx: Context): Radix =
+        Radix.fromName(prefs(ctx).getString(KEY_PROG_RADIX, null))
+
+    fun setProgRadix(ctx: Context, radix: Radix) {
+        prefs(ctx).edit().putString(KEY_PROG_RADIX, radix.name).apply()
+    }
+
+    fun progWord(ctx: Context): WordSize =
+        WordSize.fromName(prefs(ctx).getString(KEY_PROG_WORD, null))
+
+    fun setProgWord(ctx: Context, word: WordSize) {
+        prefs(ctx).edit().putString(KEY_PROG_WORD, word.name).apply()
+    }
+
     const val KEY_THEME = "theme_mode"
     const val KEY_ANGLE = "angle_mode"
     const val KEY_SCI = "sci_open"
     const val KEY_HAPTICS = "haptics"
     const val KEY_GRAPH = "graph_functions"
+    const val KEY_PROG = "prog_tokens"
+    const val KEY_PROG_RADIX = "prog_radix"
+    const val KEY_PROG_WORD = "prog_word"
 }
 
 /** Light / dark selection, applied per-app (no system-wide change). */

@@ -21,6 +21,12 @@
     <string name="cd_history">History</string>
     <string name="cd_settings">Settings</string>
     <string name="cd_graph">Graph</string>
+    <string name="cd_programmer">Programmer calculator</string>
+
+    <string name="prog_title">Programmer</string>
+    <string name="prog_word">Word size</string>
+    <string name="prog_cd_shl">Shift left</string>
+    <string name="prog_cd_shr">Shift right</string>
 
     <string name="graph_title">Graph</string>
     <string name="graph_reset">Reset view</string>
