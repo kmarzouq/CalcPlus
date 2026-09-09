@@ -3,6 +3,11 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to build & publish, e.g. v0.1.0"
+        required: true
 
 permissions:
   contents: write
@@ -15,6 +20,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Resolve tag / version
+        id: rel
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          case "$TAG" in
+            v*) ;;
+            *) echo "::error::tag must start with 'v' (got '$TAG')"; exit 1;;
+          esac
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-java@v4
         with:
@@ -63,7 +79,7 @@ jobs:
       - name: Stage artifacts
         run: |
           mkdir -p dist
-          v="${GITHUB_REF_NAME#v}"
+          v="${{ steps.rel.outputs.version }}"
           cp android/app/build/outputs/apk/release/*.apk "dist/calcplus-${v}.apk"
           cp android/app/build/outputs/bundle/release/*.aab "dist/calcplus-${v}.aab"
           (cd dist && sha256sum * > SHA256SUMS.txt)
@@ -71,6 +87,7 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.rel.outputs.tag }}
           files: |
             dist/calcplus-*.apk
             dist/calcplus-*.aab
