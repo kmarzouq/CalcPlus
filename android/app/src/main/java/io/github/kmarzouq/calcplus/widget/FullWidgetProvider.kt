@@ -5,12 +5,15 @@ import io.github.kmarzouq.calcplus.Key
 import io.github.kmarzouq.calcplus.R
 
 /**
- * The scientific calculator widget: the basic keypad plus trig, logs, roots,
- * powers, `π` / `e` and parentheses. Same decimal engine as [CalculatorWidgetProvider].
+ * The full calculator widget — the whole scientific keypad (trig, logs, roots,
+ * powers, `π` / `e`, parentheses) plus the number pad. Meant to be sized to the
+ * largest cell the launcher / lock screen allows; it is effectively the app on
+ * the home screen. Same decimal engine and broadcast-per-key design as
+ * [CalculatorWidgetProvider], so every key works while locked.
  */
-class SciWidgetProvider : DecimalWidget() {
-    override val layoutRes = R.layout.widget_sci
-    override val keyTextSp = Triple(11f, 13f, 16f)
+class FullWidgetProvider : DecimalWidget() {
+    override val layoutRes = R.layout.widget_full
+    override val keyTextSp = Triple(12f, 15f, 18f)
 
     override val keyMap: Map<Int, Key> = NUMERIC_KEYS + linkedMapOf(
         R.id.wKeySin to Key.SIN, R.id.wKeyCos to Key.COS, R.id.wKeyTan to Key.TAN,

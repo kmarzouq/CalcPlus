@@ -14,6 +14,7 @@
     <string name="key_dot">.</string>
 
     <string name="sci_toggle">SCI</string>
+    <string name="prog_toggle">1010</string>
 
     <string name="cd_delete">Delete last entry</string>
     <string name="cd_clear">Clear</string>
@@ -71,8 +72,6 @@
 
     <string name="widget_basic_label">CalcPlus</string>
     <string name="widget_description">Basic calculator — works on the lock screen.</string>
-    <string name="widget_sci_label">CalcPlus — Scientific</string>
-    <string name="widget_sci_description">Scientific calculator: trig, logs, roots, powers, π.</string>
-    <string name="widget_prog_label">CalcPlus — Programmer</string>
-    <string name="widget_prog_description">Programmer calculator: hex entry, bitwise, shifts; BASE cycles HEX/DEC/BIN.</string>
+    <string name="widget_full_label">CalcPlus — Full</string>
+    <string name="widget_full_description">The whole calculator: trig, logs, roots, powers, π and the number pad. Resize it large.</string>
 </resources>

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Scientific calculator widget. One layout; SciWidgetProvider builds three
-  RemoteViews (narrow / medium / wide) and only varies text sizes.
+  Full calculator widget (the whole scientific keypad). One layout;
+  FullWidgetProvider builds three RemoteViews (narrow / medium / wide) and
+  only varies text sizes.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"

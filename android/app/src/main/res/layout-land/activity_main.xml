@@ -42,20 +42,23 @@
 
         <ImageButton
             android:id="@+id/graphButton"
-            style="@style/ToolbarIcon"
+            style="@style/ToolbarChip"
             android:layout_marginStart="8dp"
             android:src="@drawable/ic_function"
             android:contentDescription="@string/cd_graph" />
 
-        <ImageButton
+        <Button
             android:id="@+id/programmerButton"
-            style="@style/ToolbarIcon"
-            android:src="@drawable/ic_binary"
+            style="@style/CalcChip"
+            android:layout_marginStart="6dp"
+            android:letterSpacing="0.08"
+            android:text="@string/prog_toggle"
             android:contentDescription="@string/cd_programmer" />
 
         <ImageButton
             android:id="@+id/settingsButton"
             style="@style/ToolbarIcon"
+            android:layout_marginStart="6dp"
             android:src="@drawable/ic_settings"
             android:contentDescription="@string/cd_settings" />
     </LinearLayout>

@@ -70,27 +70,15 @@
         </receiver>
 
         <receiver
-            android:name=".widget.SciWidgetProvider"
+            android:name=".widget.FullWidgetProvider"
             android:exported="true"
-            android:label="@string/widget_sci_label">
+            android:label="@string/widget_full_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_sci_info" />
-        </receiver>
-
-        <receiver
-            android:name=".widget.ProgWidgetProvider"
-            android:exported="true"
-            android:label="@string/widget_prog_label">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_prog_info" />
+                android:resource="@xml/widget_full_info" />
         </receiver>
     </application>
 

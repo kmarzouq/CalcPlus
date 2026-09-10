@@ -5,8 +5,6 @@ package io.github.kmarzouq.calcplus.widget
 
 import android.content.Context
 import io.github.kmarzouq.calcplus.CalcDoc
-import io.github.kmarzouq.calcplus.ProgDoc
-import io.github.kmarzouq.calcplus.Radix
 
 /**
  * Per-widget expression state. Backed by a private SharedPreferences file
@@ -40,43 +38,9 @@ internal object WidgetStore {
             .commit()
     }
 
-    // --- programmer widget ------------------------------------------------
-
-    /**
-     * Load a programmer widget's expression. The `evaluated` flag is stored
-     * explicitly rather than re-derived: the widget persists after every key,
-     * so a half-typed single digit must not be treated as a finished result
-     * (which the next digit would wipe).
-     */
-    fun loadProg(context: Context, widgetId: Int): ProgDoc {
-        val p = prefs(context)
-        val radix = Radix.fromName(p.getString("pradix_$widgetId", null))
-        return ProgDoc.deserialize(p.getString("pexpr_$widgetId", "").orEmpty(), radix)
-            .copy(evaluated = p.getBoolean("peval_$widgetId", false))
-    }
-
-    fun saveProg(context: Context, widgetId: Int, doc: ProgDoc) {
-        prefs(context).edit()
-            .putString("pexpr_$widgetId", ProgDoc.serialize(doc))
-            .putString("pradix_$widgetId", doc.radix.name)
-            .putBoolean("peval_$widgetId", doc.evaluated)
-            .commit()
-    }
-
-    /** Last cleanly-evaluated bit pattern — shown while an expression is mid-edit. */
-    fun loadProgBits(context: Context, widgetId: Int): Long =
-        prefs(context).getLong("pbits_$widgetId", 0L)
-
-    fun saveProgBits(context: Context, widgetId: Int, bits: Long) {
-        prefs(context).edit().putLong("pbits_$widgetId", bits).commit()
-    }
-
     fun remove(context: Context, widgetIds: IntArray) {
         val e = prefs(context).edit()
-        for (id in widgetIds) {
-            e.remove("expr_$id").remove("eval_$id")
-            e.remove("pexpr_$id").remove("pradix_$id").remove("pbits_$id").remove("peval_$id")
-        }
+        for (id in widgetIds) e.remove("expr_$id").remove("eval_$id")
         e.commit()
     }
 }

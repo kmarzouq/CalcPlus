@@ -10,15 +10,29 @@
     <style name="CalcChip">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minWidth">64dp</item>
+        <item name="android:minWidth">56dp</item>
         <item name="android:minHeight">40dp</item>
         <item name="android:paddingHorizontal">14dp</item>
         <item name="android:background">@drawable/key_background</item>
         <item name="android:textColor">@color/key_text</item>
         <item name="android:textSize">13sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <!-- Toolbar action with the same rounded-rect pill as CalcChip but an icon. -->
+    <style name="ToolbarChip">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:minWidth">56dp</item>
+        <item name="android:paddingHorizontal">14dp</item>
+        <item name="android:paddingVertical">9dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:background">@drawable/key_background</item>
     </style>
 
     <!-- Default = the collapsed look: circular keys. MainActivity swaps the
@@ -35,6 +49,11 @@
         <item name="android:textColor">@color/key_text</item>
         <item name="android:textSize">@dimen/key_text_size</item>
         <item name="android:textStyle">normal</item>
+        <!-- keep the glyph dead-centre in every shape / size -->
+        <item name="android:gravity">center</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:padding">0dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:insetLeft">0dp</item>

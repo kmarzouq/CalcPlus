@@ -26,25 +26,6 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/sciToggle"
-            style="@style/CalcChip"
-            android:layout_marginEnd="4dp"
-            android:text="@string/sci_toggle"
-            android:contentDescription="@string/cd_sci" />
-
-        <ImageButton
-            android:id="@+id/graphButton"
-            style="@style/ToolbarIcon"
-            android:src="@drawable/ic_function"
-            android:contentDescription="@string/cd_graph" />
-
-        <ImageButton
-            android:id="@+id/programmerButton"
-            style="@style/ToolbarIcon"
-            android:src="@drawable/ic_binary"
-            android:contentDescription="@string/cd_programmer" />
-
         <ImageButton
             android:id="@+id/settingsButton"
             style="@style/ToolbarIcon"
@@ -102,6 +83,32 @@
             android:id="@+id/angleToggle"
             style="@style/CalcChip"
             android:text="RAD" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/sciToggle"
+            style="@style/CalcChip"
+            android:layout_marginEnd="6dp"
+            android:text="@string/sci_toggle"
+            android:contentDescription="@string/cd_sci" />
+
+        <ImageButton
+            android:id="@+id/graphButton"
+            style="@style/ToolbarChip"
+            android:layout_marginEnd="6dp"
+            android:src="@drawable/ic_function"
+            android:contentDescription="@string/cd_graph" />
+
+        <Button
+            android:id="@+id/programmerButton"
+            style="@style/CalcChip"
+            android:letterSpacing="0.08"
+            android:text="@string/prog_toggle"
+            android:contentDescription="@string/cd_programmer" />
     </LinearLayout>
 
     <View

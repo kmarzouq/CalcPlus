@@ -35,8 +35,7 @@ class WidgetPreviewActivity : Activity() {
         for (p in listOf(
             P("basic · 1/3", R.layout.widget_calculator, 124, 236),
             P("basic · 3/3", R.layout.widget_calculator, 280, 262),
-            P("scientific", R.layout.widget_sci, 260, 420),
-            P("programmer", R.layout.widget_prog, 360, 360),
+            P("full", R.layout.widget_full, 320, 520),
         )) {
             column.addView(TextView(this).apply {
                 text = p.label
