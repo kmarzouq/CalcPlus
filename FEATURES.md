@@ -37,7 +37,7 @@ Pixel/AOSP). This is a running audit — where CalcPlus differs, it says so.
 | `\|x\|` (absolute value), `gcd`, `lcm`, `nCr`, `nPr`, `root(n,x)`, hyperbolic functions | in the engine; `\|x\|` has a key |
 | GRAD angle mode | — |
 | Interactive lock-screen widgets — a compact basic one (responsive 1/3 · 2/3 · 3/3) and a full scientific one | — |
-| **Graphing** — `y = f(x)` for up to 4 functions, pan / pinch-zoom / tap-to-trace, square auto-window, implicit multiplication (`2x`, `3(x+1)`) | — |
+| **Graphing** — `y = f(x)` for up to 4 functions, pan / pinch-zoom / tap-to-trace, square auto-window, implicit multiplication (`2x`, `3(x+1)`); CALC menu: value, zero, min, max, intersect, dy/dx, ∫f(x)dx | — |
 | **Programmer mode** — signed/unsigned 8–64-bit integers **and** floats (IEEE half / bfloat16 / float / double, or a custom sign·exp·mantissa layout); live BIN/OCT/DEC/HEX readout, tappable bit grid, `AND OR XOR NOT NAND NOR XNOR`, `<< >>`, `RoL RoR`, `MOD`, two's-complement | — |
 | Decimal (base-10) arithmetic — `0.1 + 0.2 == 0.3` exactly | — |
 | Zero permissions, ~610 KB, Rust core | — |

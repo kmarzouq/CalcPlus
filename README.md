@@ -18,8 +18,10 @@ distributed via Obtainium.
   haptics, a **Light / Dark / System** theme, and a landscape layout with both
   keypads side by side. Rotates cleanly; the expression survives the rotation.
   See [FEATURES.md](FEATURES.md) for a point-by-point comparison.
-- **Graphing.** `y = f(x)` plots for up to four functions at once — drag to
-  pan, pinch to zoom, tap to trace. The same Rust engine samples the curves.
+- **Graphing.** `y = f(x)` plots for up to four functions — drag to pan, pinch
+  to zoom, tap to trace. A **CALC** menu with the TI-84 tools: value, zero,
+  minimum, maximum, intersect, dy/dx and ∫f(x)dx (which shades the area). The
+  calculator also takes `integral(f, a, b)` directly.
 - **Programmer mode.** Integer maths — signed or unsigned, 8/16/32/64-bit — and
   float maths: IEEE presets (half, bfloat16, float, double) or a **custom**
   sign/exponent/mantissa layout. Live BIN / OCT / DEC / HEX readout, a tappable
@@ -57,7 +59,7 @@ distributed via Obtainium.
 | 1 | Decimal calculator: `+ − × ÷ ^ %`, parens, `±`, history | ✅ |
 | 2 | Interactive home/lock-screen widget, responsive sizes | ✅ |
 | 3 | Scientific: trig + inverses, hyperbolics, logs, roots, `nCr`/`gcd`, DEG/RAD/GRAD | ✅ |
-| 4 | TI-84 graphing | 🔨 plotting, pan/zoom, trace done; table/intersections next |
+| 4 | TI-84 graphing | 🔨 plot / pan / zoom / trace + CALC menu (zero, min/max, intersect, dy/dx, ∫) done; TABLE, matrices, stats next |
 | 5 | Programmer calculator: signed/unsigned ints, IEEE + custom floats, bitwise, shifts, rotations, bit grid | ✅ |
 
 ## Layout
