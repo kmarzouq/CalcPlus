@@ -79,7 +79,7 @@ class ProgrammerActivity : BaseActivity() {
         )
         ops.forEach { (btn, o) -> bind(btn) { doc.op(o) } }
 
-        bind(keyPct) { if (format.isFloat) doc.dot() else doc.op(ProgOp.MOD) }
+        bind(keyDot) { doc.dot() }
         bind(keyNot) { doc.not() }
         bind(keyLparen) { doc.open() }
         bind(keyRparen) { doc.close() }
@@ -121,14 +121,14 @@ class ProgrammerActivity : BaseActivity() {
             ui.key7 to '7', ui.key8 to '8', ui.key9 to '9',
         ).forEach { (btn, c) -> enable(btn, float || radix.accepts(c)) }
 
-        // bitwise / shift / rotate — integer only
+        // bitwise / shift / rotate / mod — integer only
         listOf(
-            ui.keyAnd, ui.keyOr, ui.keyXor, ui.keyNot, ui.keyShl, ui.keyShr, ui.keyRol, ui.keyRor,
+            ui.keyAnd, ui.keyOr, ui.keyXor, ui.keyNot, ui.keyMod,
+            ui.keyShl, ui.keyShr, ui.keyRol, ui.keyRor,
         ).forEach { enable(it, !float) }
 
-        // the % / . key
-        ui.keyPct.text = if (float) "." else "%"
-        enable(ui.keyPct, true)
+        // decimal point — float mode only
+        enable(ui.keyDot, float)
     }
 
     private fun enable(btn: Button, on: Boolean) {
