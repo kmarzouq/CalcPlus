@@ -12,6 +12,21 @@
     android:padding="6dp">
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:orientation="horizontal"
+        android:paddingBottom="4dp">
+        <Button android:id="@+id/wBarFx" style="@style/WidgetChip" android:text="@string/widget_fx" />
+        <Button android:id="@+id/wBarHist" style="@style/WidgetChip" android:text="@string/widget_hist" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        <Button android:id="@+id/wBarMode" style="@style/WidgetChip"
+            android:layout_marginEnd="0dp" android:text="@string/widget_to_prog" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/wDisplayArea"
         android:layout_width="match_parent"
         android:layout_height="0dp"

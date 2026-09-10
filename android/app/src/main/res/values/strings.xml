@@ -74,5 +74,9 @@
     <string name="widget_basic_label">CalcPlus</string>
     <string name="widget_description">Basic calculator — works on the lock screen.</string>
     <string name="widget_full_label">CalcPlus — Full</string>
-    <string name="widget_full_description">The whole calculator: trig, logs, roots, powers, π and the number pad. Resize it large.</string>
+    <string name="widget_full_description">The whole calculator: scientific and programmer keypads, plus links to graphing and history. Resize it large.</string>
+    <string name="widget_fx">f(x)</string>
+    <string name="widget_hist">history</string>
+    <string name="widget_to_prog">1010</string>
+    <string name="widget_to_dec">123</string>
 </resources>

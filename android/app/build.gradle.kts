@@ -23,8 +23,8 @@ android {
         applicationId = "io.github.kmarzouq.calcplus"
         minSdk = 31
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.2.0"
 
         // GrapheneOS / Pixel are all arm64. One ABI = one small .so, no fat APK.
         ndk { abiFilters += "arm64-v8a" }

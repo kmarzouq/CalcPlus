@@ -35,7 +35,8 @@ class WidgetPreviewActivity : Activity() {
         for (p in listOf(
             P("basic · 1/3", R.layout.widget_calculator, 124, 236),
             P("basic · 3/3", R.layout.widget_calculator, 280, 262),
-            P("full", R.layout.widget_full, 320, 520),
+            P("full · scientific", R.layout.widget_full, 320, 540),
+            P("full · programmer", R.layout.widget_full_prog, 340, 480),
         )) {
             column.addView(TextView(this).apply {
                 text = p.label
@@ -45,6 +46,7 @@ class WidgetPreviewActivity : Activity() {
             val holder = LinearLayout(this)
             val v: View = layoutInflater.inflate(p.layout, holder, false)
             v.findViewById<TextView>(R.id.wFormula)?.text = "12×3+4 = 40"
+            v.findViewById<TextView>(R.id.wpFormula)?.text = "A F 2 & 0 F"
             holder.addView(v, ViewGroup.LayoutParams(dp(p.w), dp(p.h)))
             column.addView(holder)
         }
