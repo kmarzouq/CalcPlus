@@ -132,6 +132,23 @@ impl Context {
     }
 
     fn eval_call(&self, name: &str, args: &[Expr]) -> Result<Decimal, CalcError> {
+        // `integral(f, a, b)` numerically integrates `f` over `x`; its first
+        // argument must NOT be pre-evaluated (the integrator binds `x`).
+        if name == "integral" || name == "int" {
+            if args.len() != 3 {
+                return Err(CalcError::Arity {
+                    name: name.to_string(),
+                    expected: 3,
+                    got: args.len(),
+                });
+            }
+            let lo = self.eval(&args[1])?.to_f64().ok_or(CalcError::Overflow)?;
+            let hi = self.eval(&args[2])?.to_f64().ok_or(CalcError::Overflow)?;
+            let mut ctx = self.clone();
+            let v = crate::analysis::integrate_expr(&mut ctx, &args[0], lo, hi);
+            return Decimal::from_f64(v).ok_or(CalcError::Domain("integral did not converge"));
+        }
+
         // Evaluate all arguments once, up front.
         let a: Result<alloc::vec::Vec<Decimal>, CalcError> =
             args.iter().map(|e| self.eval(e)).collect();

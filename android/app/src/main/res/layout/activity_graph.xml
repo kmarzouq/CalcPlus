@@ -16,6 +16,11 @@
             style="@style/AppBarTitle"
             android:text="@string/graph_title" />
         <Button
+            android:id="@+id/calcButton"
+            style="@style/CalcChip"
+            android:layout_marginEnd="6dp"
+            android:text="@string/graph_calc" />
+        <Button
             android:id="@+id/angleToggle"
             style="@style/CalcChip"
             android:text="RAD" />

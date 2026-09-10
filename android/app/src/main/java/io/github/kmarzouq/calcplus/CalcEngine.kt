@@ -97,6 +97,57 @@ object CalcEngine {
         }
     }
 
+    // --- graph CALC / analysis ------------------------------------------
+
+    /** ∫ f(x) dx over [a, b]; NaN if undefined there or the expression is bad. */
+    fun integrate(expression: String, a: Double, b: Double, angle: AngleMode = AngleMode.RAD): Double {
+        if (!NativeBridge.available) return Double.NaN
+        val ascii = normalize(expression)
+        if (ascii.isBlank()) return Double.NaN
+        return try {
+            NativeBridge.nativeIntegrate(ascii, a, b, angle.code)
+        } catch (_: RuntimeException) {
+            Double.NaN
+        }
+    }
+
+    /** One-curve CALC tool. [kind]: 0 zero · 1 min · 2 max · 3 dy/dx@a · 4 value@a. */
+    fun analyze(
+        expression: String,
+        kind: Int,
+        a: Double,
+        b: Double,
+        angle: AngleMode = AngleMode.RAD,
+    ): DoubleArray {
+        if (!NativeBridge.available) return DoubleArray(0)
+        val ascii = normalize(expression)
+        if (ascii.isBlank()) return DoubleArray(0)
+        return try {
+            NativeBridge.nativeAnalyze(ascii, kind, a, b, angle.code)
+        } catch (_: RuntimeException) {
+            DoubleArray(0)
+        }
+    }
+
+    /** Intersection of two curves in [a, b] → `{x, y}`, or an empty array. */
+    fun intersect(
+        expr1: String,
+        expr2: String,
+        a: Double,
+        b: Double,
+        angle: AngleMode = AngleMode.RAD,
+    ): DoubleArray {
+        if (!NativeBridge.available) return DoubleArray(0)
+        val e1 = normalize(expr1)
+        val e2 = normalize(expr2)
+        if (e1.isBlank() || e2.isBlank()) return DoubleArray(0)
+        return try {
+            NativeBridge.nativeIntersect(e1, e2, a, b, angle.code)
+        } catch (_: RuntimeException) {
+            DoubleArray(0)
+        }
+    }
+
     /**
      * Evaluate a programmer-calculator expression ([engineInput] is already
      * ASCII) under [fmt].

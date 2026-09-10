@@ -38,6 +38,7 @@
 
     <string name="graph_title">Graph</string>
     <string name="graph_reset">Reset view</string>
+    <string name="graph_calc">CALC</string>
     <string name="graph_remove">Remove</string>
     <string name="graph_y_equals">y =</string>
     <string name="graph_hint">e.g. sin(x), x^2, 2x-1</string>

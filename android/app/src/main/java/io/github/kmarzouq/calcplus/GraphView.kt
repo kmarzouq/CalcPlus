@@ -30,6 +30,7 @@ class GraphView @JvmOverloads constructor(
     var functions: List<Function> = emptyList()
         set(value) {
             field = value
+            calcResult = null
             resample()
             invalidate()
         }
@@ -43,6 +44,47 @@ class GraphView @JvmOverloads constructor(
 
     /** Called after a pan/zoom so the host can show the current window. */
     var onWindowChanged: ((xMin: Double, xMax: Double, yMin: Double, yMax: Double) -> Unit)? = null
+
+    /** `[xMin, xMax, yMin, yMax]` of the current view. */
+    val windowBounds: DoubleArray get() = doubleArrayOf(xMin, xMax, yMin, yMax)
+
+    // --- CALC tools --------------------------------------------------------
+
+    /** Result of a CALC tool: a label, an optional point to mark, and an
+     *  optional `[x0, x1]` region to shade under [shadeExpr]. */
+    data class CalcResult(
+        val label: String,
+        val point: Pair<Double, Double>? = null,
+        val shade: Pair<Double, Double>? = null,
+        val shadeExpr: String? = null,
+    )
+
+    var calcResult: CalcResult? = null
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    /** Called with the picked x-values once [startCalc] has collected enough. */
+    var onCalcPicked: ((DoubleArray) -> Unit)? = null
+
+    private var calcTapsNeeded = 0
+    private val calcTaps = ArrayList<Double>()
+
+    /** Enter CALC pick mode: [taps] = 1 (a point) or 2 (a range). */
+    fun startCalc(taps: Int) {
+        calcTapsNeeded = taps
+        calcTaps.clear()
+        calcResult = null
+        traceX = null
+        invalidate()
+    }
+
+    fun cancelCalc() {
+        calcTapsNeeded = 0
+        calcTaps.clear()
+        invalidate()
+    }
 
     private var xMin = -10.0
     private var xMax = 10.0
@@ -71,6 +113,15 @@ class GraphView @JvmOverloads constructor(
     private val traceText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = res(R.color.display_text)
         textSize = dp(12f)
+    }
+    private val shadePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = PALETTE[0]
+        alpha = 60
+    }
+    private val markerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = res(R.color.graph_label)
+        style = Paint.Style.STROKE
+        strokeWidth = dp(1.5f)
     }
 
     private val scaleDetector = ScaleGestureDetector(
@@ -113,6 +164,8 @@ class GraphView @JvmOverloads constructor(
         }
         yMin = -half; yMax = half
         traceX = null
+        cancelCalc()
+        calcResult = null
         resample()
         invalidate()
         notifyWindow()
@@ -143,8 +196,54 @@ class GraphView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         drawGrid(canvas)
+        calcResult?.shade?.let { (x0, x1) -> drawShade(canvas, x0, x1, calcResult?.shadeExpr) }
         for (f in functions) drawCurve(canvas, f)
+        for (tx in calcTaps) canvas.drawLine(pxX(tx), 0f, pxX(tx), height.toFloat(), traceLine)
         traceX?.let { drawTrace(canvas, it) }
+        calcResult?.let { drawCalcResult(canvas, it) }
+    }
+
+    private fun drawShade(c: Canvas, x0: Double, x1: Double, expr: String?) {
+        if (expr == null) return
+        val lo = minOf(x0, x1).coerceAtLeast(xMin)
+        val hi = maxOf(x0, x1).coerceAtMost(xMax)
+        if (hi <= lo) return
+        val n = ((pxX(hi) - pxX(lo)) / 2f).toInt().coerceIn(2, 1024)
+        val ys = CalcEngine.sample(expr, lo, hi, n, angle)
+        if (ys.isEmpty()) return
+        val path = Path()
+        path.moveTo(pxX(lo), pxY(0.0))
+        for (i in ys.indices) {
+            val x = lo + (hi - lo) * i / (ys.size - 1)
+            val y = if (ys[i].isFinite()) ys[i] else 0.0
+            path.lineTo(pxX(x), pxY(y))
+        }
+        path.lineTo(pxX(hi), pxY(0.0))
+        path.close()
+        c.drawPath(path, shadePaint)
+    }
+
+    private fun drawCalcResult(c: Canvas, r: CalcResult) {
+        r.point?.let { (x, y) ->
+            val px = pxX(x)
+            val py = pxY(y)
+            c.drawLine(px, 0f, px, height.toFloat(), traceLine)
+            c.drawCircle(px, py, dp(5f), markerPaint)
+            traceDot.color = PALETTE[0]
+            c.drawCircle(px, py, dp(3.5f), traceDot)
+        }
+        // label box, top-left, kept on screen
+        val lines = r.label.split('\n')
+        val pad = dp(8f)
+        val w = lines.maxOf { traceText.measureText(it) } + pad * 2
+        val lh = traceText.fontSpacing
+        val h = lh * lines.size + pad
+        val lx = dp(8f)
+        val ly = dp(12f)
+        c.drawRoundRect(lx, ly, lx + w, ly + h, dp(8f), dp(8f), traceBg)
+        for ((i, s) in lines.withIndex()) {
+            c.drawText(s, lx + pad, ly + pad + lh * (i + 0.8f), traceText)
+        }
     }
 
     private fun pxX(x: Double) = ((x - xMin) / (xMax - xMin) * width).toFloat()
@@ -250,8 +349,19 @@ class GraphView @JvmOverloads constructor(
             }
             MotionEvent.ACTION_UP -> {
                 if (!dragged) {
-                    traceX = mathX(e.x)
-                    invalidate()
+                    if (calcTapsNeeded > 0) {
+                        calcTaps.add(mathX(e.x))
+                        if (calcTaps.size >= calcTapsNeeded) {
+                            val xs = calcTaps.toDoubleArray()
+                            calcTapsNeeded = 0
+                            calcTaps.clear()
+                            onCalcPicked?.invoke(xs)
+                        }
+                        invalidate()
+                    } else {
+                        traceX = mathX(e.x)
+                        invalidate()
+                    }
                 }
                 parent?.requestDisallowInterceptTouchEvent(false)
             }

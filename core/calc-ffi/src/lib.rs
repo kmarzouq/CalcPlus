@@ -13,7 +13,7 @@
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::ptr;
 
-use calc_core::{evaluate_to_string, programmer, AngleMode, FormatOptions, NumFormat};
+use calc_core::{analysis, evaluate_to_string, programmer, AngleMode, FormatOptions, NumFormat};
 use jni::objects::{JClass, JString};
 use jni::sys::{jchar, jdouble, jdoubleArray, jint, jlong, jstring};
 use jni::JNIEnv;
@@ -111,6 +111,111 @@ pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeSampl
             arr.into_raw()
         }
         Err(_) => ptr::null_mut(),
+    }
+}
+
+fn f64_array<'l>(env: &mut JNIEnv<'l>, xs: &[f64]) -> jdoubleArray {
+    match env.new_double_array(xs.len() as jint) {
+        Ok(arr) => {
+            if !xs.is_empty() {
+                let _ = env.set_double_array_region(&arr, 0, xs);
+            }
+            arr.into_raw()
+        }
+        Err(_) => ptr::null_mut(),
+    }
+}
+
+/// `NativeBridge.nativeIntegrate(expr, a, b, angleMode)` — ∫ `expr` dx from
+/// `a` to `b`. Returns `NaN` if the integrand is undefined on the interval or
+/// `expr` is malformed.
+#[no_mangle]
+pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeIntegrate<'l>(
+    mut env: JNIEnv<'l>,
+    _class: JClass<'l>,
+    expr: JString<'l>,
+    a: jdouble,
+    b: jdouble,
+    angle_mode: jint,
+) -> jdouble {
+    catch_unwind(AssertUnwindSafe(|| {
+        let input: String = env.get_string(&expr).map(Into::into).unwrap_or_default();
+        analysis::integrate(&input, a, b, angle_of(angle_mode)).unwrap_or(f64::NAN)
+    }))
+    .unwrap_or(f64::NAN)
+}
+
+/// `NativeBridge.nativeAnalyze(expr, kind, a, b, angleMode)` — a graph CALC
+/// tool on one curve. `kind`: `0` = root/zero in `[a,b]`, `1` = minimum,
+/// `2` = maximum, `3` = dy/dx at `x = a`, `4` = value at `x = a`. Returns a
+/// `double[2]` `{x, y}`, or an **empty** array when nothing was found / the
+/// expression is malformed.
+#[no_mangle]
+pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeAnalyze<'l>(
+    mut env: JNIEnv<'l>,
+    _class: JClass<'l>,
+    expr: JString<'l>,
+    kind: jint,
+    a: jdouble,
+    b: jdouble,
+    angle_mode: jint,
+) -> jdoubleArray {
+    let out = catch_unwind(AssertUnwindSafe(|| -> Option<[f64; 2]> {
+        let input: String = env.get_string(&expr).ok()?.into();
+        let angle = angle_of(angle_mode);
+        let pair = match kind {
+            0 => {
+                let x = analysis::root(&input, a, b, angle).ok()?;
+                (x, analysis::value(&input, x, angle).ok()?)
+            }
+            1 => analysis::extremum(&input, a, b, false, angle).ok()?,
+            2 => analysis::extremum(&input, a, b, true, angle).ok()?,
+            3 => (a, analysis::derivative(&input, a, angle).ok()?),
+            _ => (a, analysis::value(&input, a, angle).ok()?),
+        };
+        if pair.0.is_finite() && pair.1.is_finite() {
+            Some([pair.0, pair.1])
+        } else {
+            None
+        }
+    }))
+    .ok()
+    .flatten();
+
+    match out {
+        Some(xy) => f64_array(&mut env, &xy),
+        None => f64_array(&mut env, &[]),
+    }
+}
+
+/// `NativeBridge.nativeIntersect(expr1, expr2, a, b, angleMode)` — an
+/// intersection of two curves in `[a, b]`. Returns `{x, y}` or an empty array.
+#[no_mangle]
+pub extern "system" fn Java_io_github_kmarzouq_calcplus_NativeBridge_nativeIntersect<'l>(
+    mut env: JNIEnv<'l>,
+    _class: JClass<'l>,
+    expr1: JString<'l>,
+    expr2: JString<'l>,
+    a: jdouble,
+    b: jdouble,
+    angle_mode: jint,
+) -> jdoubleArray {
+    let out = catch_unwind(AssertUnwindSafe(|| -> Option<[f64; 2]> {
+        let f1: String = env.get_string(&expr1).ok()?.into();
+        let f2: String = env.get_string(&expr2).ok()?.into();
+        let (x, y) = analysis::intersect(&f1, &f2, a, b, angle_of(angle_mode)).ok()?;
+        if x.is_finite() && y.is_finite() {
+            Some([x, y])
+        } else {
+            None
+        }
+    }))
+    .ok()
+    .flatten();
+
+    match out {
+        Some(xy) => f64_array(&mut env, &xy),
+        None => f64_array(&mut env, &[]),
     }
 }
 

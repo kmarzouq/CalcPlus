@@ -17,6 +17,7 @@ use alloc::string::String;
 use alloc::vec::Vec;
 use rust_decimal::prelude::{FromPrimitive, ToPrimitive};
 
+pub mod analysis;
 pub mod ast;
 pub mod error;
 pub mod eval;
@@ -169,6 +170,19 @@ mod tests {
 
         // a bad expression is the only hard error
         assert!(sample("x +", 0.0, 1.0, 2, AngleMode::Radians).is_err());
+    }
+
+    #[test]
+    fn integral_function_in_the_calculator() {
+        // ∫₀¹ x² dx = 1/3, ∫₋₂³ (2x+1) dx = 10
+        assert!((ev("integral(x^2, 0, 1)") - dec!(0.333333333333)).abs() < dec!(1e-9));
+        assert_eq!(ev("integral(2x + 1, -2, 3)").round_dp(6), dec!(10));
+        // nests / composes with the rest of the grammar
+        assert_eq!(ev("2 * integral(x, 0, 1)").round_dp(6), dec!(1));
+        assert!(matches!(
+            evaluate("integral(x^2, 0)"),
+            Err(CalcError::Arity { .. })
+        ));
     }
 
     #[test]
